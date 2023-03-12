@@ -1,4 +1,5 @@
-import { BaseMap } from "../components/map/baseMap";
+import { BaseMap } from "@/components/map/baseMap";
+import { Menu } from "@/components/menu/menu";
 
 export default function Home() {
     return (
@@ -10,12 +11,7 @@ export default function Home() {
                     </div>
                 </div>
                 <div className="absolute flex left-0 top-0 pt-4 justify-items-center">
-                    <div
-                        className="rounded-md bg-white m-auto p-2 ml-2 cursor-default text-lg 
-                                    hover:bg-gray-400 hover:text-white hover:cursor-pointer"
-                    >
-                        menu
-                    </div>
+                    <Menu />
                 </div>
                 <div className="absolute flex right-0 top-0 pt-4 justify-items-center">
                     <div
