@@ -1,31 +1,31 @@
-import Map, {
-    Source,
-    Layer,
-    FullscreenControl,
-    NavigationControl,
-    Popup
-} from "react-map-gl";
+import { FC } from "react";
+import Map, { Source, Layer, NavigationControl, Popup } from "react-map-gl";
 
-export const BaseMap = () => {
+type Props = {
+    children: React.ReactNode | Array<React.ReactNode>;
+};
+
+export const BaseMap: FC<Props> = ({ children }) => {
     return (
         <>
             <div style={{ height: "100vh", width: "100%" }}>
                 <Map
                     initialViewState={{
-                        latitude: 40,
-                        longitude: -100,
-                        zoom: 3
+                        latitude: 51.486331388,
+                        longitude: -0.186499254,
+                        zoom: 14
                     }}
                     mapStyle="mapbox://styles/mapbox/light-v9"
-                    mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN} //"pk.eyJ1IjoiZGF2aWRiZW5kZXIiLCJhIjoiY2sxMmFzeWhmMGF0NjNjbWo5b3UzMmE2aiJ9.8iS9Doej1ZSwYZeljuL_lg"
+                    mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
+                    pitch={60}
                 >
-                    <FullscreenControl />
                     <div>
                         <NavigationControl
                             position={"bottom-right"}
                             visualizePitch={true}
                         />
                     </div>
+                    {children}
                 </Map>
             </div>
         </>
