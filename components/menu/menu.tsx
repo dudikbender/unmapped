@@ -6,7 +6,7 @@ type MenuItem = {
     link: string;
 };
 
-export const menuItems = {
+export const menuItems: Record<string, MenuItem> = {
     notes: {
         text: "notes",
         icon: "notes",
