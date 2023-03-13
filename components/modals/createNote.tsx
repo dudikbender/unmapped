@@ -1,6 +1,7 @@
 import React, { FC, Fragment, useState, useEffect } from "react";
 import { Transition, Dialog } from "@headlessui/react";
-//import { XIcon } from "@heroicons/react/outline";
+import { useNoteStore } from "@/services/stores/noteStore";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
     show: boolean;
@@ -15,6 +16,7 @@ export const CreateNoteModal: FC<Props> = ({
 }) => {
     const [showModal, setShowModal] = useState(show);
     const [noteContent, setNoteContent] = useState("");
+    const { addNote } = useNoteStore();
 
     useEffect(() => {
         setShowModal(show);
@@ -111,6 +113,18 @@ export const CreateNoteModal: FC<Props> = ({
                                                                 console.log(
                                                                     noteContent
                                                                 );
+                                                                addNote({
+                                                                    id: uuidv4(),
+                                                                    content:
+                                                                        noteContent,
+                                                                    latitude:
+                                                                        coordinates?.lat,
+                                                                    longitude:
+                                                                        coordinates?.lng,
+                                                                    date: new Date(),
+                                                                    user: "test",
+                                                                    opened: false
+                                                                });
                                                                 setShowModal(
                                                                     false
                                                                 );

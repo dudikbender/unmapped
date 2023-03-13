@@ -1,17 +1,15 @@
 import { FC, useState } from "react";
-import Map, { Source, Layer, NavigationControl, Popup } from "react-map-gl";
-import { Toolbox } from "@nebula.gl/editor";
-import { ViewMode, DrawPolygonMode } from "@nebula.gl/edit-modes";
-import { EditableGeoJsonLayer } from "@nebula.gl/layers";
+import Map, {
+    Source,
+    Layer,
+    NavigationControl,
+    Popup,
+    Marker
+} from "react-map-gl";
 
 type Props = {
     children: React.ReactNode | Array<React.ReactNode>;
     onSelectedPoint: (point: { lat: number; lng: number }) => void;
-};
-
-type LatLng = {
-    lat: number;
-    lng: number;
 };
 
 export const BaseMap: FC<Props> = ({ children, onSelectedPoint }) => {
@@ -19,7 +17,7 @@ export const BaseMap: FC<Props> = ({ children, onSelectedPoint }) => {
         type: "FeatureCollection",
         features: []
     });
-    const [selectedPoint, setSelectedPoint] = useState<LatLng | null>(null);
+    const [zoomLevel, setZoomLevel] = useState<number>(14);
     return (
         <>
             <div style={{ height: "100vh", width: "100%" }}>
@@ -31,9 +29,12 @@ export const BaseMap: FC<Props> = ({ children, onSelectedPoint }) => {
                     }}
                     mapStyle="mapbox://styles/mapbox/light-v9"
                     mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-                    pitch={60}
+                    pitch={45}
                     onClick={(e) => {
                         onSelectedPoint(e.lngLat);
+                    }}
+                    onZoomEnd={(e) => {
+                        setZoomLevel(e.viewState.zoom);
                     }}
                 >
                     <div>

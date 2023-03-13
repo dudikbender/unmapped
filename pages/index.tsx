@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { BaseMap } from "@/components/map/baseMap";
+import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
 import { CreateNoteModal } from "@/components/modals/createNote";
+import { useNoteStore } from "@/services/stores/noteStore";
+import { Note } from "@/services/types/note";
 
 export default function Home() {
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
@@ -9,11 +12,17 @@ export default function Home() {
         lat: number;
         lng: number;
     } | null>(null);
+    const { notes } = useNoteStore();
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         console.log("Lat: " + point.lat + " Lng: " + point.lng);
         setSelectedPoint(point);
         setNoteCreateModalOpen(true);
     };
+
+    // Console log each note in the store
+    notes.forEach((note: Object) => {
+        console.log(note);
+    });
     return (
         <div className="relative">
             <BaseMap
@@ -37,6 +46,15 @@ export default function Home() {
                         profile
                     </div>
                 </div>
+                {notes.map((note: Note) => {
+                    return (
+                        <NoteMarker
+                            key={note.id}
+                            latitude={note.latitude}
+                            longitude={note.longitude}
+                        />
+                    );
+                })}
                 <CreateNoteModal
                     show={noteCreateModalOpen}
                     coordinates={selectedPoint}
