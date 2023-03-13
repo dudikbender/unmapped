@@ -1,9 +1,8 @@
 export type Note = {
-    id: string;
+    id: number | null;
     latitude: number;
     longitude: number;
     content: string;
-    date: Date;
-    user: string;
-    opened: boolean;
+    uuid: string;
+    userId: string;
 };

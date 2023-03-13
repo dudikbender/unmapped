@@ -7,16 +7,17 @@ export const useNoteStore = create(
     persist(
         (set, get) => ({
             notes: [],
-            addNote: (note) =>
+            setNotesInStore: (notes) => set({ notes }),
+            addNoteToStore: (note) =>
                 set((state) => ({
                     notes: [...state.notes, note]
                 })),
-            updateNote: (note) => {
+            updateNoteInStore: (note) => {
                 set((state) => ({
                     notes: state.notes.map((n) => (n.id === note.id ? note : n))
                 }));
             },
-            deleteNote: (id) => {
+            deleteNoteInStore: (id) => {
                 set((state) => ({
                     notes: state.notes.filter((note) => note.id !== id)
                 }));

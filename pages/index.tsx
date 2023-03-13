@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from "react";
+import { useState, useEffect } from "react";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
@@ -6,10 +6,7 @@ import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
-
-type Props = {
-    data: Array<Note>;
-};
+import { getNotes } from "@/services/database/getNotes";
 
 export default function Home() {
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
@@ -19,12 +16,21 @@ export default function Home() {
     } | null>(null);
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-    const { notes } = useNoteStore();
+    const { notes: notesInStore, setNotesInStore } = useNoteStore();
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         console.log("Lat: " + point.lat + " Lng: " + point.lng);
         setSelectedPoint(point);
         setNoteCreateModalOpen(true);
     };
+
+    useEffect(() => {
+        // Get notes from database with getNotes function of type Note
+        const getNotesFromDatabase = async () => {
+            const notes = await getNotes();
+            setNotesInStore(notes);
+        };
+        getNotesFromDatabase();
+    }, []);
 
     useEffect(() => {
         if (noteReadModalOpen) {
@@ -46,7 +52,7 @@ export default function Home() {
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
                 </div>
-                {notes.map((note: Note) => {
+                {notesInStore.map((note: Note) => {
                     return (
                         <div
                             key={note.id}
