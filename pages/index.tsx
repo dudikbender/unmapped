@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
 import { CreateNoteModal } from "@/components/modals/createNote";
+import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
 
@@ -12,6 +13,8 @@ export default function Home() {
         lat: number;
         lng: number;
     } | null>(null);
+    const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
+    const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const { notes } = useNoteStore();
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         console.log("Lat: " + point.lat + " Lng: " + point.lng);
@@ -19,10 +22,11 @@ export default function Home() {
         setNoteCreateModalOpen(true);
     };
 
-    // Console log each note in the store
-    notes.forEach((note: Object) => {
-        console.log(note);
-    });
+    useEffect(() => {
+        if (noteReadModalOpen) {
+            setNoteCreateModalOpen(false);
+        }
+    }, [noteReadModalOpen]);
     return (
         <div className="relative">
             <BaseMap
@@ -30,35 +34,43 @@ export default function Home() {
                     handleSelectedPoint(point);
                 }}
             >
-                <div className="absolute hidden sm:flex inset-x-0 top-0 pt-4 justify-items-center">
+                <div className="absolute flex left-0 top-0 pt-4 ml-2 justify-items-center">
                     <div className="m-auto p-2 cursor-default text-lg">
                         unmapped
                     </div>
                 </div>
-                <div className="absolute flex left-0 top-0 pt-4 justify-items-center">
+                <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
-                </div>
-                <div className="absolute flex right-0 top-0 pt-4 justify-items-center">
-                    <div
-                        className="rounded-md bg-white m-auto p-2 mr-2 cursor-default text-lg 
-                                    hover:bg-gray-400 hover:text-white hover:cursor-pointer"
-                    >
-                        profile
-                    </div>
                 </div>
                 {notes.map((note: Note) => {
                     return (
-                        <NoteMarker
-                            key={note.id}
-                            latitude={note.latitude}
-                            longitude={note.longitude}
-                        />
+                        <div
+                            onClick={() => {
+                                setSelectedNote(note);
+                                setNoteReadModalOpen(true);
+                            }}
+                        >
+                            <NoteMarker
+                                key={note.id}
+                                latitude={note.latitude}
+                                longitude={note.longitude}
+                            />
+                        </div>
                     );
                 })}
                 <CreateNoteModal
-                    show={noteCreateModalOpen}
+                    show={noteReadModalOpen ? false : noteCreateModalOpen}
                     coordinates={selectedPoint}
                     handleClose={() => {
+                        setNoteCreateModalOpen(false);
+                    }}
+                />
+                <ReadNoteModal
+                    show={noteReadModalOpen}
+                    note={selectedNote}
+                    handleClose={() => {
+                        setSelectedNote(null);
+                        setNoteReadModalOpen(false);
                         setNoteCreateModalOpen(false);
                     }}
                 />

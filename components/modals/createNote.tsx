@@ -2,6 +2,7 @@ import React, { FC, Fragment, useState, useEffect } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { v4 as uuidv4 } from "uuid";
+import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     show: boolean;
@@ -67,23 +68,23 @@ export const CreateNoteModal: FC<Props> = ({
                                     <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
                                         <div className="flex relative min-h-0 flex-1 flex-col overflow-y-scroll py-6 ">
                                             <div className="flex absolute top-6 right-6 items-center">
-                                                <Dialog.Title className="text-md text-gray-900 font-serif pr-10">
-                                                    Drop a note...
-                                                </Dialog.Title>
+                                                <Dialog.Title className="text-md text-gray-900 font-serif pr-10"></Dialog.Title>
                                                 <button
                                                     onClick={() =>
                                                         setShowModal(false)
                                                     }
                                                     className="text-black text-xl text-bold place-self-end hover:text-gray-400"
                                                 >
-                                                    <span>x</span>
+                                                    <span>
+                                                        <XMarkIcon className="h-6 w-6" />
+                                                    </span>
                                                 </button>
                                             </div>
                                             <div className="relative mt-6 flex-1 px-4 sm:px-6">
                                                 <div>
                                                     <div>
                                                         <label
-                                                            htmlFor="about"
+                                                            htmlFor="coordinates"
                                                             className="block text-sm font-medium text-gray-700"
                                                         >
                                                             {coordinates?.lat} ,{" "}
@@ -91,8 +92,8 @@ export const CreateNoteModal: FC<Props> = ({
                                                         </label>
                                                         <div className="mt-1">
                                                             <textarea
-                                                                id="about"
-                                                                name="about"
+                                                                id="note-content"
+                                                                name="note-content"
                                                                 rows={5}
                                                                 className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
                                                                 defaultValue={
