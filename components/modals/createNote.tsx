@@ -73,7 +73,7 @@ export const CreateNoteModal: FC<Props> = ({
                                                     onClick={() =>
                                                         setShowModal(false)
                                                     }
-                                                    className="text-black text-xl text-bold place-self-end hover:text-gray-400"
+                                                    className="text-black text-xl text-bold place-self-end hover:text-blue-500"
                                                 >
                                                     <span>
                                                         <XMarkIcon className="h-6 w-6" />
@@ -95,7 +95,7 @@ export const CreateNoteModal: FC<Props> = ({
                                                                 id="note-content"
                                                                 name="note-content"
                                                                 rows={5}
-                                                                className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                                                                className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-blue-300 rounded-md"
                                                                 defaultValue={
                                                                     ""
                                                                 }
