@@ -12,7 +12,7 @@ export default function Home() {
     const [selectedPoint, setSelectedPoint] = useState<{
         lat: number;
         lng: number;
-    } | null>(null);
+    }>({ lat: 0, lng: 0 });
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);

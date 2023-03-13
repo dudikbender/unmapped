@@ -1,5 +1,5 @@
 export type Note = {
-    id: number | null;
+    id?: number;
     latitude: number;
     longitude: number;
     content: string;

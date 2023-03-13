@@ -81,17 +81,23 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                         {note?.latitude} ,{" "}
                                                         {note?.longitude}
                                                     </label>
-                                                    <div className="mt-1">
+                                                    <div className="mt-4">
                                                         <textarea
                                                             id="note-content"
                                                             name="note-content"
                                                             disabled={true}
-                                                            rows={5}
+                                                            rows={4}
                                                             className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
                                                             defaultValue={
                                                                 note?.content
                                                             }
                                                         />
+                                                    </div>
+                                                    <div className="mt-2">
+                                                        <span className="text-xs">
+                                                            Note Dropped by:
+                                                            {note?.userId}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>

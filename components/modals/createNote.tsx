@@ -1,12 +1,14 @@
 import React, { FC, Fragment, useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Transition, Dialog } from "@headlessui/react";
-import { useNoteStore } from "@/services/stores/noteStore";
 import { v4 as uuidv4 } from "uuid";
-import { XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { addNote } from "@/services/database/addNote";
+import { useNoteStore } from "@/services/stores/noteStore";
 
 type Props = {
     show: boolean;
-    coordinates: { lat: number; lng: number } | null;
+    coordinates: { lat: number; lng: number };
     handleClose: () => void;
 };
 
@@ -17,7 +19,9 @@ export const CreateNoteModal: FC<Props> = ({
 }) => {
     const [showModal, setShowModal] = useState(show);
     const [noteContent, setNoteContent] = useState("");
-    const { addNote } = useNoteStore();
+    const { user } = useUser();
+    const { addNoteToStore } = useNoteStore();
+    const userId = user ? user.id : "";
 
     useEffect(() => {
         setShowModal(show);
@@ -28,6 +32,30 @@ export const CreateNoteModal: FC<Props> = ({
             setTimeout(handleClose, 300);
         }
     }, [showModal]);
+
+    const handleAddNote = async () => {
+        const note = {
+            uuid: uuidv4(),
+            latitude: coordinates?.lat,
+            longitude: coordinates?.lng,
+            content: noteContent,
+            userId: userId
+        };
+
+        try {
+            const newNote = await addNote(note);
+            addNoteToStore({
+                uuid: note.uuid,
+                latitude: note.latitude,
+                longitude: note.longitude,
+                content: note.content,
+                userId: note.userId
+            });
+            setShowModal(false);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     if (!show) {
         return null;
@@ -90,7 +118,7 @@ export const CreateNoteModal: FC<Props> = ({
                                                             {coordinates?.lat} ,{" "}
                                                             {coordinates?.lng}
                                                         </label>
-                                                        <div className="mt-1">
+                                                        <div className="mt-4">
                                                             <textarea
                                                                 id="note-content"
                                                                 name="note-content"
@@ -111,24 +139,7 @@ export const CreateNoteModal: FC<Props> = ({
                                                         </div>
                                                         <button
                                                             onClick={() => {
-                                                                console.log(
-                                                                    noteContent
-                                                                );
-                                                                addNote({
-                                                                    id: uuidv4(),
-                                                                    content:
-                                                                        noteContent,
-                                                                    latitude:
-                                                                        coordinates?.lat,
-                                                                    longitude:
-                                                                        coordinates?.lng,
-                                                                    date: new Date(),
-                                                                    user: "test",
-                                                                    opened: false
-                                                                });
-                                                                setShowModal(
-                                                                    false
-                                                                );
+                                                                handleAddNote();
                                                             }}
                                                         >
                                                             Drop note
