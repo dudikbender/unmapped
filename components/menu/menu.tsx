@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Link from "next/link";
-import { Bars3Icon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 type MenuItem = {
     text: string;
@@ -43,7 +43,11 @@ export const Menu = () => {
                 )}
                 onClick={() => setMenuOpen(!menuOpen)}
             >
-                <Bars3Icon className="h-6 w-6" />
+                {!menuOpen ? (
+                    <Bars3Icon className="h-6 w-6" />
+                ) : (
+                    <XMarkIcon className="h-6 w-6" />
+                )}
             </div>
             <div>
                 {menuOpen && (
