@@ -1,10 +1,26 @@
+import { useState } from "react";
 import { BaseMap } from "@/components/map/baseMap";
 import { Menu } from "@/components/menu/menu";
+import { CreateNoteModal } from "@/components/modals/createNote";
 
 export default function Home() {
+    const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
+    const [selectedPoint, setSelectedPoint] = useState<{
+        lat: number;
+        lng: number;
+    } | null>(null);
+    const handleSelectedPoint = (point: { lat: number; lng: number }) => {
+        console.log("Lat: " + point.lat + " Lng: " + point.lng);
+        setSelectedPoint(point);
+        setNoteCreateModalOpen(true);
+    };
     return (
         <div className="relative">
-            <BaseMap>
+            <BaseMap
+                onSelectedPoint={(point) => {
+                    handleSelectedPoint(point);
+                }}
+            >
                 <div className="absolute hidden sm:flex inset-x-0 top-0 pt-4 justify-items-center">
                     <div className="m-auto p-2 cursor-default text-lg">
                         unmapped
@@ -21,6 +37,13 @@ export default function Home() {
                         profile
                     </div>
                 </div>
+                <CreateNoteModal
+                    show={noteCreateModalOpen}
+                    coordinates={selectedPoint}
+                    handleClose={() => {
+                        setNoteCreateModalOpen(false);
+                    }}
+                />
             </BaseMap>
         </div>
     );

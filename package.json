@@ -10,6 +10,13 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^4.11.7",
+    "@deck.gl/core": "^8.9.1",
+    "@deck.gl/layers": "^8.9.1",
+    "@deck.gl/react": "^8.9.1",
+    "@headlessui/react": "^1.7.13",
+    "@heroicons/react": "^2.0.16",
+    "@nebula.gl/editor": "^1.0.4",
+    "@nebula.gl/layers": "^1.0.4",
     "@types/node": "18.15.0",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
@@ -17,11 +24,13 @@
     "d3-scale": "^4.0.2",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "heroicons": "^2.0.16",
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-map-gl": "^7.0.21",
-    "typescript": "4.9.5"
+    "typescript": "4.9.5",
+    "zustand": "^4.3.6"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",

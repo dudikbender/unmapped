@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 
 type MenuItem = {
     text: string;
@@ -24,13 +25,21 @@ export const menuItems: Record<string, MenuItem> = {
     }
 };
 
+function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(" ");
+}
+
 export const Menu = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     return (
         <>
             <div
-                className="rounded-md bg-white m-auto p-2 ml-2 cursor-default text-lg 
-                    hover:bg-gray-400 hover:text-white hover:cursor-pointer"
+                className={classNames(
+                    menuOpen
+                        ? "bg-gray-200 italic"
+                        : "bg-white hover:bg-gray-400 hover:text-white",
+                    "rounded-md m-auto p-2 ml-2 cursor-default text-lg hover:cursor-pointer"
+                )}
                 onClick={() => setMenuOpen(!menuOpen)}
             >
                 menu
@@ -44,7 +53,9 @@ export const Menu = () => {
                                 className="rounded-md bg-white m-auto p-2 my-1 ml-2 cursor-default text-lg
                                         hover:bg-gray-400 hover:text-white hover:cursor-pointer"
                             >
-                                {menuItems[key].text}
+                                <Link href={menuItems[key].link}>
+                                    {menuItems[key].text}
+                                </Link>
                             </div>
                         ))}
                     </div>
