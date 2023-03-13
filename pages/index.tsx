@@ -9,14 +9,14 @@ import { Note } from "@/services/types/note";
 import { getNotes } from "@/services/database/getNotes";
 
 export default function Home() {
-    const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
     const [selectedPoint, setSelectedPoint] = useState<{
         lat: number;
         lng: number;
     } | null>(null);
+    const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-    const { notes: notesInStore, setNotesInStore } = useNoteStore();
+    const { notes, setNotesInStore } = useNoteStore();
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         console.log("Lat: " + point.lat + " Lng: " + point.lng);
         setSelectedPoint(point);
@@ -24,7 +24,6 @@ export default function Home() {
     };
 
     useEffect(() => {
-        // Get notes from database with getNotes function of type Note
         const getNotesFromDatabase = async () => {
             const notes = await getNotes();
             setNotesInStore(notes);
@@ -52,7 +51,7 @@ export default function Home() {
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
                 </div>
-                {notesInStore.map((note: Note) => {
+                {notes.map((note: Note) => {
                     return (
                         <div
                             key={note.id}
