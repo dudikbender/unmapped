@@ -45,6 +45,7 @@ export default function Home() {
                 {notes.map((note: Note) => {
                     return (
                         <div
+                            key={note.id}
                             onClick={() => {
                                 setSelectedNote(note);
                                 setNoteReadModalOpen(true);
