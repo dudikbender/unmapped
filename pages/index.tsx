@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FC } from "react";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
@@ -6,6 +6,10 @@ import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
+
+type Props = {
+    data: Array<Note>;
+};
 
 export default function Home() {
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
