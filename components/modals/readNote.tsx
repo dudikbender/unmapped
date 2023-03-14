@@ -118,7 +118,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                                 src={
                                                                     author
                                                                         .avatar
-                                                                        .length >
+                                                                        ?.length >
                                                                     0
                                                                         ? author.avatar
                                                                         : "/placeholder-author.png"
