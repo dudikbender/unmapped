@@ -2,6 +2,8 @@ import React, { FC, Fragment, useState, useEffect } from "react";
 import { Transition, Dialog } from "@headlessui/react";
 import { Note } from "@/services/types/note";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { getUser } from "@/services/users/getUser";
+import Image from "next/image";
 
 type Props = {
     show: boolean;
@@ -11,6 +13,21 @@ type Props = {
 
 export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     const [showModal, setShowModal] = useState(show);
+    const [author, setAuthor] = useState({ name: "", avatar: "" });
+
+    const getAuthor = async () => {
+        const author = await getUser(note?.userId);
+        setAuthor({
+            name: author.first_name,
+            avatar: author.profile_image_url
+        });
+    };
+
+    useEffect(() => {
+        if (note) {
+            getAuthor();
+        }
+    }, [note]);
 
     useEffect(() => {
         setShowModal(show);
@@ -19,6 +36,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     useEffect(() => {
         if (!showModal) {
             setTimeout(handleClose, 300);
+            setAuthor({ name: "", avatar: "" });
         }
     }, [showModal]);
 
@@ -81,7 +99,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                         {note?.latitude} ,{" "}
                                                         {note?.longitude}
                                                     </label>
-                                                    <div className="mt-4">
+                                                    <div className="mt-4 border-2 border-blue-200 rounded-md">
                                                         <textarea
                                                             id="note-content"
                                                             name="note-content"
@@ -93,11 +111,28 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                             }
                                                         />
                                                     </div>
-                                                    <div className="mt-2">
-                                                        <span className="text-xs">
-                                                            Note Dropped by:
-                                                            {note?.userId}
-                                                        </span>
+                                                    <div className="flex items-center mt-2">
+                                                        <div className="relative h-[30px] w-[30px]">
+                                                            <Image
+                                                                className="rounded-full object-cover"
+                                                                src={
+                                                                    author
+                                                                        .avatar
+                                                                        .length >
+                                                                    0
+                                                                        ? author.avatar
+                                                                        : "/placeholder-author.png"
+                                                                }
+                                                                alt="Note Author Image"
+                                                                fill={true}
+                                                            />
+                                                        </div>
+                                                        <div className="my-2 ml-2 cursor-default">
+                                                            <span className="text-xs">
+                                                                Note Dropped by:{" "}
+                                                                {author.name}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

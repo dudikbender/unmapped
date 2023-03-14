@@ -4,3 +4,6 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+module.exports = {
+    images: { domains: ["images.clerk.dev", "www.gravatar.com"] }
+};

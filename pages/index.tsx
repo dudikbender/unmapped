@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { UserButton } from "@clerk/nextjs";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
@@ -18,7 +19,6 @@ export default function Home() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
-        console.log("Lat: " + point.lat + " Lng: " + point.lng);
         setSelectedPoint(point);
         setNoteCreateModalOpen(true);
     };
@@ -44,9 +44,7 @@ export default function Home() {
                 }}
             >
                 <div className="absolute flex left-0 top-0 pt-4 ml-2 justify-items-center">
-                    <div className="m-auto p-2 cursor-default text-lg">
-                        unmapped
-                    </div>
+                    <UserButton />
                 </div>
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
