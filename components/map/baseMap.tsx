@@ -19,7 +19,6 @@ export const BaseMap: FC<Props> = ({
     initialCenter,
     onSelectedPoint
 }) => {
-    //const [mapCenter, setMapCenter] = useState<LatLng>(initialCenter);
     const [loading, setLoading] = useState<boolean>(false);
     const [features, setFeatures] = useState({
         type: "FeatureCollection",
@@ -30,7 +29,7 @@ export const BaseMap: FC<Props> = ({
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-        }, 500);
+        }, 100);
     }, [initialCenter]);
 
     if (loading) {

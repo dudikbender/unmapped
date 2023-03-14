@@ -13,7 +13,7 @@ import { getUserLocation } from "@/services/users/getUserLocation";
 
 export default function Home() {
     const [userLatLng, setUserLatLng] = useState<LatLng>({
-        lat: 0,
+        lat: 51.4769,
         lng: 0
     });
     const [selectedPoint, setSelectedPoint] = useState<{
