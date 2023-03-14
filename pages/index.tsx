@@ -7,9 +7,15 @@ import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
+import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
+import { getUserLocation } from "@/services/users/getUserLocation";
 
 export default function Home() {
+    const [userLatLng, setUserLatLng] = useState<LatLng>({
+        lat: 0,
+        lng: 0
+    });
     const [selectedPoint, setSelectedPoint] = useState<{
         lat: number;
         lng: number;
@@ -22,6 +28,20 @@ export default function Home() {
         setSelectedPoint(point);
         setNoteCreateModalOpen(true);
     };
+
+    const userLocation = async () => {
+        const location = await getUserLocation();
+        return location;
+    };
+
+    useEffect(() => {
+        userLocation().then((location) => {
+            if (location !== null) {
+                console.log(location);
+                setUserLatLng(location);
+            }
+        });
+    }, []);
 
     useEffect(() => {
         const getNotesFromDatabase = async () => {
@@ -39,6 +59,7 @@ export default function Home() {
     return (
         <div className="relative">
             <BaseMap
+                initialCenter={userLatLng}
                 onSelectedPoint={(point) => {
                     handleSelectedPoint(point);
                 }}
