@@ -26,6 +26,7 @@ export default function Home() {
     }>({ lat: 0, lng: 0 });
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
+    const [blockRead, setBlockRead] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
     const distanceToNote = haversine(
@@ -36,13 +37,7 @@ export default function Home() {
     );
 
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
-        const checkDistance = haversine(
-            userLatLng.lat,
-            userLatLng.lng,
-            point.lat,
-            point.lng
-        );
-        if (checkDistance < proximityRadius) {
+        if (!blockRead) {
             setSelectedPoint(point);
             setNoteCreateModalOpen(true);
         }
@@ -103,7 +98,7 @@ export default function Home() {
                                     setNoteReadModalOpen(true);
                                 } else {
                                     alert("You are too far away");
-                                    setNoteCreateModalOpen(false);
+                                    setBlockRead(true);
                                 }
                             }}
                         >

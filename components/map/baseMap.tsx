@@ -29,7 +29,7 @@ export const BaseMap: FC<Props> = ({
         setLoading(true);
         setTimeout(() => {
             setLoading(false);
-        }, 1000);
+        }, 750);
     }, [initialCenter]);
 
     if (loading) {
