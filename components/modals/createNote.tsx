@@ -89,8 +89,8 @@ export const CreateNoteModal: FC<Props> = ({
                                 enterFrom="translate-x-full opacity-0"
                                 enterTo="translate-x-0 opacity-100"
                                 leave="transition ease-in-out duration-500 transform"
-                                leaveFrom="translate-x-0 opacity-100"
-                                leaveTo="translate-x-full opacity-0"
+                                leaveFrom="translate-y-0 opacity-100"
+                                leaveTo="translate-y-full opacity-0"
                             >
                                 <Dialog.Panel className="pointer-events-auto w-screen max-w-xl lg:max-w-2xl">
                                     <div className="flex h-full flex-col divide-y divide-gray-200 bg-white shadow-xl">
