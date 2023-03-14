@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UserButton } from "@clerk/nextjs";
+import { UserButton, useUser } from "@clerk/nextjs";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
@@ -10,8 +10,12 @@ import { Note } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
 import { getUserLocation } from "@/services/users/getUserLocation";
+import { haversine } from "@/services/geo/haversine";
+
+const proximityRadius = 0.5;
 
 export default function Home() {
+    const { user } = useUser();
     const [userLatLng, setUserLatLng] = useState<LatLng>({
         lat: 51.4769,
         lng: 0
@@ -24,9 +28,24 @@ export default function Home() {
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
+    const distanceToNote = haversine(
+        userLatLng.lat,
+        userLatLng.lng,
+        selectedNote?.latitude,
+        selectedNote?.longitude
+    );
+
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
-        setSelectedPoint(point);
-        setNoteCreateModalOpen(true);
+        const checkDistance = haversine(
+            userLatLng.lat,
+            userLatLng.lng,
+            point.lat,
+            point.lng
+        );
+        if (checkDistance < proximityRadius) {
+            setSelectedPoint(point);
+            setNoteCreateModalOpen(true);
+        }
     };
 
     const userLocation = async () => {
@@ -56,6 +75,7 @@ export default function Home() {
             setNoteCreateModalOpen(false);
         }
     }, [noteReadModalOpen]);
+
     return (
         <div className="relative">
             <BaseMap
@@ -75,14 +95,33 @@ export default function Home() {
                         <div
                             key={note.id}
                             onClick={() => {
-                                setSelectedNote(note);
-                                setNoteReadModalOpen(true);
+                                if (
+                                    distanceToNote < proximityRadius ||
+                                    user?.id === note.userId
+                                ) {
+                                    setSelectedNote(note);
+                                    setNoteReadModalOpen(true);
+                                } else {
+                                    alert("You are too far away");
+                                    setNoteCreateModalOpen(false);
+                                }
                             }}
                         >
                             <NoteMarker
                                 key={note.id}
                                 latitude={note.latitude}
                                 longitude={note.longitude}
+                                availableToOpen={
+                                    distanceToNote
+                                        ? distanceToNote < proximityRadius
+                                            ? true
+                                            : false
+                                        : false
+                                }
+                                alreadyOpened={false}
+                                currentUserIsAuthor={
+                                    user?.id === note.userId ? true : false
+                                }
                             />
                         </div>
                     );

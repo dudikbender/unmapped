@@ -118,7 +118,7 @@ export const CreateNoteModal: FC<Props> = ({
                                                             {coordinates?.lat} ,{" "}
                                                             {coordinates?.lng}
                                                         </label>
-                                                        <div className="mt-4">
+                                                        <div className="mt-4 border-2 border-blue-200 rounded-md">
                                                             <textarea
                                                                 id="note-content"
                                                                 name="note-content"

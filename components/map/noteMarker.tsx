@@ -1,14 +1,26 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import { Marker } from "react-map-gl";
-import { EnvelopeIcon } from "@heroicons/react/24/outline";
+import { EnvelopeIcon, EnvelopeOpenIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     latitude: number;
     longitude: number;
+    availableToOpen: boolean;
+    alreadyOpened: boolean;
+    currentUserIsAuthor: boolean;
 };
 
-export const NoteMarker: FC<Props> = ({ latitude, longitude }) => {
-    const [opened, setOpened] = useState<boolean>(false);
+function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(" ");
+}
+
+export const NoteMarker: FC<Props> = ({
+    latitude,
+    longitude,
+    availableToOpen,
+    alreadyOpened,
+    currentUserIsAuthor
+}) => {
     return (
         <Marker
             latitude={latitude}
@@ -19,8 +31,21 @@ export const NoteMarker: FC<Props> = ({ latitude, longitude }) => {
                 console.log(e.lngLat);
             }}
         >
-            <div className="p-1 rounded-full bg-blue-500 text-white hover:cursor-pointer">
-                <EnvelopeIcon className="h-3 w-3" />
+            <div
+                className={classNames(
+                    currentUserIsAuthor
+                        ? "bg-purple-500"
+                        : availableToOpen
+                        ? "bg-blue-500"
+                        : "bg-gray-500",
+                    "text-white p-1 rounded-full hover:cursor-pointer"
+                )}
+            >
+                {alreadyOpened ? (
+                    <EnvelopeOpenIcon className="h-3 w-3" />
+                ) : (
+                    <EnvelopeIcon className="h-3 w-3" />
+                )}
             </div>
         </Marker>
     );
