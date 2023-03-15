@@ -32,10 +32,12 @@ export default function Home() {
     const [users, setUsers] = useState<any>(null);
     const { notes, setNotesInStore } = useNoteStore();
 
+    /* 
+    // Get Connection list for logged in user, then retrieve data from Clerk API for the user list
+
     const userList = async () => {
         const users = await getUserList([
-            "user_2N1hrM17UOSjzSKrjPlfK5aelxV",
-            "user_2MyWVLsUUMELM0l7zP0qAr3vRmf"
+
         ]);
         setUsers(users);
     };
@@ -44,7 +46,7 @@ export default function Home() {
         userList();
     }, []);
 
-    console.log(users);
+    console.log(users); */
 
     // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
     const visibleNotes = notes.filter((note: Note) => {
