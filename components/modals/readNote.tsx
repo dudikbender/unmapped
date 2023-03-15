@@ -216,9 +216,6 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                             <button
                                                                 className="p-2 text-gray-900 border-2 border-gray-200 rounded-lg hover:bg-blue-500 hover:text-white"
                                                                 onClick={() => {
-                                                                    console.log(
-                                                                        noteContent
-                                                                    );
                                                                     handleUpdateContent();
                                                                 }}
                                                                 disabled={

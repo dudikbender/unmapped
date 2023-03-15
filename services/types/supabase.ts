@@ -9,6 +9,41 @@ export type Json =
 export interface Database {
     public: {
         Tables: {
+            Connections: {
+                Row: {
+                    accepted: boolean | null;
+                    accepted_date: string | null;
+                    blocked: boolean | null;
+                    blocked_date: string | null;
+                    created_at: string | null;
+                    id: number;
+                    requested_user: string;
+                    requester_user: string;
+                    uuid: string;
+                };
+                Insert: {
+                    accepted?: boolean | null;
+                    accepted_date?: string | null;
+                    blocked?: boolean | null;
+                    blocked_date?: string | null;
+                    created_at?: string | null;
+                    id?: number;
+                    requested_user: string;
+                    requester_user: string;
+                    uuid?: string;
+                };
+                Update: {
+                    accepted?: boolean | null;
+                    accepted_date?: string | null;
+                    blocked?: boolean | null;
+                    blocked_date?: string | null;
+                    created_at?: string | null;
+                    id?: number;
+                    requested_user?: string;
+                    requester_user?: string;
+                    uuid?: string;
+                };
+            };
             NoteReads: {
                 Row: {
                     created_at: string | null;
@@ -45,7 +80,7 @@ export interface Database {
                     reply_to_note: string | null;
                     to_user_id: string | null;
                     user_id: string;
-                    uuid: string;
+                    uuid: string | null;
                 };
                 Insert: {
                     content: string;
@@ -56,7 +91,7 @@ export interface Database {
                     reply_to_note?: string | null;
                     to_user_id?: string | null;
                     user_id: string;
-                    uuid?: string;
+                    uuid?: string | null;
                 };
                 Update: {
                     content?: string;
@@ -67,7 +102,7 @@ export interface Database {
                     reply_to_note?: string | null;
                     to_user_id?: string | null;
                     user_id?: string;
-                    uuid?: string;
+                    uuid?: string | null;
                 };
             };
         };

@@ -14,6 +14,11 @@ export const menuItems: Record<string, MenuItem> = {
         icon: "notes",
         link: "/notes"
     },
+    connections: {
+        text: "connections",
+        icon: "connections",
+        link: "/connections"
+    },
     share: {
         text: "share",
         icon: "share",

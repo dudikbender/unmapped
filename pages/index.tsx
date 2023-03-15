@@ -11,6 +11,7 @@ import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
 import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
+import { getUserList } from "@/services/users/getUser";
 
 const proximityRadius = 5;
 
@@ -28,13 +29,22 @@ export default function Home() {
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [blockRead, setBlockRead] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [users, setUsers] = useState<any>(null);
     const { notes, setNotesInStore } = useNoteStore();
-    const distanceToNote = haversine(
-        userLatLng.lat,
-        userLatLng.lng,
-        selectedNote?.latitude,
-        selectedNote?.longitude
-    );
+
+    const userList = async () => {
+        const users = await getUserList([
+            "user_2N1hrM17UOSjzSKrjPlfK5aelxV",
+            "user_2MyWVLsUUMELM0l7zP0qAr3vRmf"
+        ]);
+        setUsers(users);
+    };
+
+    useEffect(() => {
+        userList();
+    }, []);
+
+    console.log(users);
 
     // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
     const visibleNotes = notes.filter((note: Note) => {
@@ -100,7 +110,7 @@ export default function Home() {
                     );
                     return (
                         <div
-                            key={note.id}
+                            key={note.uuid}
                             onClick={() => {
                                 if (
                                     noteDistance < proximityRadius ||
