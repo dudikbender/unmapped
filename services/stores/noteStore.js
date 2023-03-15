@@ -14,12 +14,14 @@ export const useNoteStore = create(
                 })),
             updateNoteInStore: (note) => {
                 set((state) => ({
-                    notes: state.notes.map((n) => (n.id === note.id ? note : n))
+                    notes: state.notes.map((n) =>
+                        n.uuid === note.uuid ? note : n
+                    )
                 }));
             },
             deleteNoteInStore: (id) => {
                 set((state) => ({
-                    notes: state.notes.filter((note) => note.id !== id)
+                    notes: state.notes.filter((note) => note.uuid !== uuid)
                 }));
             }
         }),

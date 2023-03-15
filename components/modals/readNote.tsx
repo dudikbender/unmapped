@@ -1,10 +1,16 @@
 import React, { FC, Fragment, useState, useEffect } from "react";
+import Image from "next/image";
 import { Transition, Dialog } from "@headlessui/react";
 import { useUser } from "@clerk/nextjs";
 import { Note } from "@/services/types/note";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useNoteStore } from "@/services/stores/noteStore";
 import { getUser } from "@/services/users/getUser";
-import Image from "next/image";
+import {
+    updateNoteContent,
+    updateNoteCoordinates
+} from "@/services/database/updateNote";
+import { v4 as uuidv4 } from "uuid";
 
 type Props = {
     show: boolean;
@@ -12,14 +18,28 @@ type Props = {
     handleClose: () => void;
 };
 
+type AuthorData = {
+    name: string;
+    avatar: string;
+    authorUserId: string;
+};
+
+function classNames(...classes: string[]) {
+    return classes.filter(Boolean).join(" ");
+}
+
 export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
-    const [showModal, setShowModal] = useState(show);
-    const [author, setAuthor] = useState({
+    const [showModal, setShowModal] = useState<boolean>(show);
+    const [noteContent, setNoteContent] = useState<string | undefined>(
+        note?.content
+    );
+    const [author, setAuthor] = useState<AuthorData>({
         name: "",
         avatar: "",
         authorUserId: ""
     });
     const { user } = useUser();
+    const { updateNoteInStore } = useNoteStore();
 
     const getAuthor = async () => {
         const author = await getUser(note?.user_id);
@@ -43,9 +63,32 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     useEffect(() => {
         if (!showModal) {
             setTimeout(handleClose, 300);
+            setNoteContent(undefined);
             setAuthor({ name: "", avatar: "", authorUserId: "" });
         }
+        setNoteContent(note?.content);
     }, [showModal]);
+
+    const handleUpdateContent = async () => {
+        try {
+            const updatedNote = await updateNoteContent(
+                noteContent,
+                note?.uuid
+            );
+            updateNoteInStore({
+                uuid: note?.uuid,
+                latitude: note?.latitude,
+                longitude: note?.longitude,
+                content: noteContent,
+                user_id: note?.user_id,
+                reply_to_note: note?.reply_to_note,
+                to_user_id: note?.to_user_id
+            });
+            setShowModal(false);
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     if (!show) {
         return null;
@@ -106,15 +149,30 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                         {note?.latitude} ,{" "}
                                                         {note?.longitude}
                                                     </label>
-                                                    <div className="mt-4 border-2 border-blue-200 rounded-md">
+                                                    <div className="mt-4">
                                                         <textarea
                                                             id="note-content"
                                                             name="note-content"
-                                                            disabled={true}
+                                                            disabled={
+                                                                note?.user_id !==
+                                                                user?.id
+                                                            }
                                                             rows={4}
-                                                            className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                                                            className={classNames(
+                                                                note?.user_id ===
+                                                                    user?.id
+                                                                    ? "border-blue-400"
+                                                                    : "border-blue-200",
+                                                                "shadow-sm p-2  mt-1 block w-full sm:text-sm border-gray-300 rounded-md border-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
+                                                            )}
                                                             defaultValue={
-                                                                note?.content
+                                                                noteContent
+                                                            }
+                                                            onChange={(e) =>
+                                                                setNoteContent(
+                                                                    e.target
+                                                                        .value
+                                                                )
                                                             }
                                                         />
                                                     </div>
@@ -159,9 +217,16 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                                 className="p-2 text-gray-900 border-2 border-gray-200 rounded-lg hover:bg-blue-500 hover:text-white"
                                                                 onClick={() => {
                                                                     console.log(
-                                                                        "Update note"
+                                                                        noteContent
                                                                     );
+                                                                    handleUpdateContent();
                                                                 }}
+                                                                disabled={
+                                                                    noteContent?.length ===
+                                                                        0 ||
+                                                                    noteContent ===
+                                                                        note?.content
+                                                                }
                                                             >
                                                                 Update note
                                                             </button>

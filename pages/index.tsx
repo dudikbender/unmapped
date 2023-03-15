@@ -12,7 +12,7 @@ import { getNotes } from "@/services/database/getNotes";
 import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
 
-const proximityRadius = 0.5;
+const proximityRadius = 5;
 
 export default function Home() {
     const { user } = useUser();

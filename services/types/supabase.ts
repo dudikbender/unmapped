@@ -42,7 +42,7 @@ export interface Database {
                     id: number;
                     latitude: number;
                     longitude: number;
-                    reply_to_note_id: number | null;
+                    reply_to_note: string | null;
                     to_user_id: string | null;
                     user_id: string;
                     uuid: string;
@@ -53,7 +53,7 @@ export interface Database {
                     id?: number;
                     latitude: number;
                     longitude: number;
-                    reply_to_note_id?: number | null;
+                    reply_to_note?: string | null;
                     to_user_id?: string | null;
                     user_id: string;
                     uuid?: string;
@@ -64,7 +64,7 @@ export interface Database {
                     id?: number;
                     latitude?: number;
                     longitude?: number;
-                    reply_to_note_id?: number | null;
+                    reply_to_note?: string | null;
                     to_user_id?: string | null;
                     user_id?: string;
                     uuid?: string;
