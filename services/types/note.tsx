@@ -4,5 +4,7 @@ export type Note = {
     longitude: number;
     content: string;
     uuid: string;
-    userId: string;
+    user_id: string;
+    reply_to_note_id?: number | null;
+    to_user_id?: string | null;
 };

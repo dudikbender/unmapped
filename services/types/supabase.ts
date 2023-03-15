@@ -37,30 +37,37 @@ export interface Database {
             };
             Notes: {
                 Row: {
-                    content: string | null;
-                    created_at: string | null;
+                    content: string;
+                    created_at: string;
                     id: number;
-                    latitude: number | null;
+                    latitude: number;
                     longitude: number;
-                    userId: string;
-                    uuid?: string;
+                    reply_to_note_id: number | null;
+                    to_user_id: string | null;
+                    user_id: string;
+                    uuid: string;
                 };
                 Insert: {
-                    content?: string | null;
-                    created_at?: string | null;
+                    content: string;
+                    created_at?: string;
                     id?: number;
-                    latitude?: number | null;
+                    latitude: number;
                     longitude: number;
-                    userId: string;
+                    reply_to_note_id?: number | null;
+                    to_user_id?: string | null;
+                    user_id: string;
+                    uuid?: string;
                 };
                 Update: {
-                    content?: string | null;
-                    created_at?: string | null;
+                    content?: string;
+                    created_at?: string;
                     id?: number;
-                    uuid?: string;
-                    latitude?: number | null;
+                    latitude?: number;
                     longitude?: number;
-                    userId?: string;
+                    reply_to_note_id?: number | null;
+                    to_user_id?: string | null;
+                    user_id?: string;
+                    uuid?: string;
                 };
             };
         };

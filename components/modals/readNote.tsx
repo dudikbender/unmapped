@@ -1,5 +1,6 @@
 import React, { FC, Fragment, useState, useEffect } from "react";
 import { Transition, Dialog } from "@headlessui/react";
+import { useUser } from "@clerk/nextjs";
 import { Note } from "@/services/types/note";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { getUser } from "@/services/users/getUser";
@@ -13,13 +14,19 @@ type Props = {
 
 export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     const [showModal, setShowModal] = useState(show);
-    const [author, setAuthor] = useState({ name: "", avatar: "" });
+    const [author, setAuthor] = useState({
+        name: "",
+        avatar: "",
+        authorUserId: ""
+    });
+    const { user } = useUser();
 
     const getAuthor = async () => {
-        const author = await getUser(note?.userId);
+        const author = await getUser(note?.user_id);
         setAuthor({
             name: author.first_name,
-            avatar: author.profile_image_url
+            avatar: author.profile_image_url,
+            authorUserId: author.id
         });
     };
 
@@ -36,7 +43,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     useEffect(() => {
         if (!showModal) {
             setTimeout(handleClose, 300);
-            setAuthor({ name: "", avatar: "" });
+            setAuthor({ name: "", avatar: "", authorUserId: "" });
         }
     }, [showModal]);
 
@@ -129,11 +136,37 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                         </div>
                                                         <div className="my-2 ml-2 cursor-default">
                                                             <span className="text-xs">
-                                                                Note Dropped by:{" "}
-                                                                {author.name}
+                                                                Note Dropped by{" "}
+                                                                {user?.id ===
+                                                                author.authorUserId ? (
+                                                                    <span className="text-blue-500">
+                                                                        you
+                                                                    </span>
+                                                                ) : (
+                                                                    <span className="text-blue-500">
+                                                                        {
+                                                                            author.name
+                                                                        }
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </div>
                                                     </div>
+                                                    {user?.id ===
+                                                    author.authorUserId ? (
+                                                        <div className="mt-4">
+                                                            <button
+                                                                className="p-2 text-gray-900 border-2 border-gray-200 rounded-lg hover:bg-blue-500 hover:text-white"
+                                                                onClick={() => {
+                                                                    console.log(
+                                                                        "Update note"
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Update note
+                                                            </button>
+                                                        </div>
+                                                    ) : null}
                                                 </div>
                                             </div>
                                         </div>

@@ -34,12 +34,17 @@ export const CreateNoteModal: FC<Props> = ({
     }, [showModal]);
 
     const handleAddNote = async () => {
+        if (!noteContent || !coordinates) {
+            alert("Add content to drop note...");
+            return;
+        }
+
         const note = {
             uuid: uuidv4(),
             latitude: coordinates?.lat,
             longitude: coordinates?.lng,
             content: noteContent,
-            userId: userId
+            user_id: userId
         };
 
         try {
@@ -49,7 +54,7 @@ export const CreateNoteModal: FC<Props> = ({
                 latitude: note.latitude,
                 longitude: note.longitude,
                 content: note.content,
-                userId: note.userId
+                user_id: note.user_id
             });
             setShowModal(false);
         } catch (error) {
@@ -137,13 +142,16 @@ export const CreateNoteModal: FC<Props> = ({
                                                                 }}
                                                             />
                                                         </div>
-                                                        <button
-                                                            onClick={() => {
-                                                                handleAddNote();
-                                                            }}
-                                                        >
-                                                            Drop note
-                                                        </button>
+                                                        <div className="mt-4">
+                                                            <button
+                                                                className="p-2 text-gray-900 border-2 border-gray-200 rounded-lg hover:bg-blue-500 hover:text-white"
+                                                                onClick={() => {
+                                                                    handleAddNote();
+                                                                }}
+                                                            >
+                                                                Drop note
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

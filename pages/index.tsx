@@ -36,6 +36,13 @@ export default function Home() {
         selectedNote?.longitude
     );
 
+    // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
+    const visibleNotes = notes.filter((note: Note) => {
+        if (note.user_id === user?.id || note.to_user_id === user?.id) {
+            return note;
+        }
+    });
+
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         if (!blockRead) {
             setSelectedPoint(point);
@@ -51,7 +58,6 @@ export default function Home() {
     useEffect(() => {
         userLocation().then((location) => {
             if (location !== null) {
-                console.log(location);
                 setUserLatLng(location);
             }
         });
@@ -85,14 +91,20 @@ export default function Home() {
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
                 </div>
-                {notes.map((note: Note) => {
+                {visibleNotes.map((note: Note) => {
+                    const noteDistance = haversine(
+                        userLatLng.lat,
+                        userLatLng.lng,
+                        note.latitude,
+                        note.longitude
+                    );
                     return (
                         <div
                             key={note.id}
                             onClick={() => {
                                 if (
-                                    distanceToNote < proximityRadius ||
-                                    user?.id === note.userId
+                                    noteDistance < proximityRadius ||
+                                    user?.id === note.user_id
                                 ) {
                                     setSelectedNote(note);
                                     setNoteReadModalOpen(true);
@@ -106,17 +118,9 @@ export default function Home() {
                                 key={note.id}
                                 latitude={note.latitude}
                                 longitude={note.longitude}
-                                availableToOpen={
-                                    distanceToNote
-                                        ? distanceToNote < proximityRadius
-                                            ? true
-                                            : false
-                                        : false
-                                }
+                                availableToOpen={noteDistance < proximityRadius}
                                 alreadyOpened={false}
-                                currentUserIsAuthor={
-                                    user?.id === note.userId ? true : false
-                                }
+                                currentUserIsAuthor={note.user_id === user?.id}
                             />
                         </div>
                     );
