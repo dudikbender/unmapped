@@ -30,6 +30,9 @@ export const UserLocator: FC<Props> = ({
             position={widgetPosition}
             positionOptions={options}
             trackUserLocation={true}
+            showUserLocation={true}
+            showUserHeading={true}
+            showAccuracyCircle={false}
             onGeolocate={(e) => onCurrentLocation(e)}
         />
     );
