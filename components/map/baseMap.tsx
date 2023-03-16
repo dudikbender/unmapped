@@ -1,24 +1,27 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState, useCallback } from "react";
 import Map, {
     Source,
     Layer,
     NavigationControl,
     Popup,
     Marker,
-    GeolocateControl
+    GeolocateResultEvent
 } from "react-map-gl";
+import { UserLocator } from "./userLocator";
 import { LoadingMapSpinner } from "./loadingMap";
 
 type Props = {
     children: React.ReactNode | Array<React.ReactNode>;
     initialCenter: { lat: number; lng: number };
     onSelectedPoint: (point: { lat: number; lng: number }) => void;
+    userCurrentLocation?: (value: GeolocateResultEvent) => void;
 };
 
 export const BaseMap: FC<Props> = ({
     children,
     initialCenter,
-    onSelectedPoint
+    onSelectedPoint,
+    userCurrentLocation
 }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [features, setFeatures] = useState({
@@ -26,12 +29,14 @@ export const BaseMap: FC<Props> = ({
         features: []
     });
     const [zoomLevel, setZoomLevel] = useState<number>(14);
-    useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 750);
-    }, [initialCenter]);
+    const geolocateControlRef = useCallback((ref: any) => {
+        if (ref) {
+            // Activate 1 second after map
+            setTimeout(() => {
+                ref.trigger();
+            }, 500);
+        }
+    }, []);
 
     if (loading) {
         return (
@@ -66,12 +71,17 @@ export const BaseMap: FC<Props> = ({
                             visualizePitch={true}
                         />
                     </div>
+                    <div>
+                        <UserLocator
+                            innerRef={geolocateControlRef}
+                            onCurrentLocation={(e) => {
+                                if (userCurrentLocation) {
+                                    userCurrentLocation(e);
+                                }
+                            }}
+                        />
+                    </div>
                     {children}
-                    <GeolocateControl
-                        position="bottom-left"
-                        trackUserLocation={true}
-                        showUserHeading={true}
-                    />
                 </Map>
             </div>
         </>

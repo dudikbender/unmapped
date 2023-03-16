@@ -57,7 +57,7 @@ export default function Home() {
         }
     };
 
-    const userLocation = async () => {
+    /* const userLocation = async () => {
         const location = await getUserLocation();
         return location;
     };
@@ -68,7 +68,7 @@ export default function Home() {
                 setUserLatLng(location);
             }
         });
-    }, []);
+    }, []); */
 
     useEffect(() => {
         const getNotesFromDatabase = async () => {
@@ -91,6 +91,12 @@ export default function Home() {
                 onSelectedPoint={(point) => {
                     handleSelectedPoint(point);
                 }}
+                userCurrentLocation={(e) =>
+                    setUserLatLng({
+                        lat: e.coords.latitude,
+                        lng: e.coords.longitude
+                    })
+                }
             >
                 <div className="absolute flex left-0 top-0 pt-4 ml-2 justify-items-center">
                     <UserButton />
