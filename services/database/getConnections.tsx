@@ -1,4 +1,4 @@
-import { createClient, PostgrestError } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/services/types/supabase";
 
 const supabase = createClient<Database>(
@@ -8,14 +8,15 @@ const supabase = createClient<Database>(
 
 export const getConnections = async (
     userId: string
-): Promise<any | PostgrestError> => {
-    const { data: Connection, error } = await supabase
+): Promise<Array<Object> | null> => {
+    const { data: connections, error } = await supabase
         .from("Connections")
         .select()
-        .or(`requester_user.eq.${userId},requested_id.eq.${userId}`);
+        .or(`requester_user.eq.${userId},requested_user.eq.${userId}`);
     if (error) {
         console.log(error);
-        return error;
+        return null;
     }
-    return Connection;
+
+    return connections;
 };

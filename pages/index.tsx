@@ -6,12 +6,13 @@ import { Menu } from "@/components/menu/menu";
 import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
+import { useConnectionStore } from "@/services/stores/connectionStore";
 import { Note } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
 import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
-import { getUserList } from "@/services/users/getUser";
+import { getUserConnections } from "@/services/users/getUserConnections";
 
 const proximityRadius = 5;
 
@@ -31,22 +32,17 @@ export default function Home() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [users, setUsers] = useState<any>(null);
     const { notes, setNotesInStore } = useNoteStore();
-
-    /* 
-    // Get Connection list for logged in user, then retrieve data from Clerk API for the user list
-
-    const userList = async () => {
-        const users = await getUserList([
-
-        ]);
-        setUsers(users);
-    };
+    const { connections, setConnectionsInStore } = useConnectionStore();
 
     useEffect(() => {
-        userList();
+        const getUserConnectionsFromDatabase = async () => {
+            const connections = await getUserConnections(user?.id);
+            if (connections) {
+                setConnectionsInStore(connections);
+            }
+        };
+        getUserConnectionsFromDatabase();
     }, []);
-
-    console.log(users); */
 
     // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
     const visibleNotes = notes.filter((note: Note) => {

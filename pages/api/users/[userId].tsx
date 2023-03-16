@@ -8,7 +8,7 @@ export default async function handler(
     const response = fetch(`https://api.clerk.dev/v1/users/${userId}`, {
         headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_CLERK_SECRET_KEY}`
+            Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`
         }
     }).then((res) => res.json());
     const data = await response;

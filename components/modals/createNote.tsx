@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { addNote } from "@/services/database/addNote";
 import { useNoteStore } from "@/services/stores/noteStore";
+import { ConnectionsLookup } from "./connectionsLookup";
 
 type Props = {
     show: boolean;
@@ -18,6 +19,9 @@ export const CreateNoteModal: FC<Props> = ({
     handleClose
 }) => {
     const [showModal, setShowModal] = useState(show);
+    const [noteReceipient, setNoteReceipient] = useState<string | undefined>(
+        ""
+    );
     const [noteContent, setNoteContent] = useState("");
     const { user } = useUser();
     const { addNoteToStore } = useNoteStore();
@@ -44,7 +48,8 @@ export const CreateNoteModal: FC<Props> = ({
             latitude: coordinates?.lat,
             longitude: coordinates?.lng,
             content: noteContent,
-            user_id: userId
+            user_id: userId,
+            to_user_id: noteReceipient
         };
 
         try {
@@ -54,7 +59,8 @@ export const CreateNoteModal: FC<Props> = ({
                 latitude: note.latitude,
                 longitude: note.longitude,
                 content: note.content,
-                user_id: note.user_id
+                user_id: note.user_id,
+                to_user_id: note.to_user_id
             });
             setShowModal(false);
         } catch (error) {
@@ -123,12 +129,27 @@ export const CreateNoteModal: FC<Props> = ({
                                                             {coordinates?.lat} ,{" "}
                                                             {coordinates?.lng}
                                                         </label>
-                                                        <div className="mt-4 border-2 border-blue-200 rounded-md">
+                                                        <h1 className="mt-2 text-gray-900">
+                                                            To:
+                                                        </h1>
+                                                        <div>
+                                                            <ConnectionsLookup
+                                                                handleSelection={(
+                                                                    e
+                                                                ) =>
+                                                                    setNoteReceipient(
+                                                                        e?.userId
+                                                                    )
+                                                                }
+                                                            />
+                                                        </div>
+                                                        <div className="mt-4">
                                                             <textarea
                                                                 id="note-content"
                                                                 name="note-content"
                                                                 rows={5}
-                                                                className="shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full sm:text-sm border-blue-300 rounded-md"
+                                                                className="shadow-sm p-2 border-2 border-blue-200 rounded-md focus:ring-blue-500 focus:border-blue-500 mt-1 block w-full 
+                                                                            sm:text-sm rounded-md focus:outline-none"
                                                                 defaultValue={
                                                                     ""
                                                                 }

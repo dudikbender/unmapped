@@ -13,8 +13,6 @@ export interface Database {
                 Row: {
                     accepted: boolean | null;
                     accepted_date: string | null;
-                    blocked: boolean | null;
-                    blocked_date: string | null;
                     created_at: string | null;
                     id: number;
                     requested_user: string;
@@ -24,8 +22,6 @@ export interface Database {
                 Insert: {
                     accepted?: boolean | null;
                     accepted_date?: string | null;
-                    blocked?: boolean | null;
-                    blocked_date?: string | null;
                     created_at?: string | null;
                     id?: number;
                     requested_user: string;
@@ -35,8 +31,6 @@ export interface Database {
                 Update: {
                     accepted?: boolean | null;
                     accepted_date?: string | null;
-                    blocked?: boolean | null;
-                    blocked_date?: string | null;
                     created_at?: string | null;
                     id?: number;
                     requested_user?: string;
