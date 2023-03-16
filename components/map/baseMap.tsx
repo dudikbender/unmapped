@@ -4,7 +4,8 @@ import Map, {
     Layer,
     NavigationControl,
     Popup,
-    Marker
+    Marker,
+    GeolocateControl
 } from "react-map-gl";
 import { LoadingMapSpinner } from "./loadingMap";
 
@@ -66,6 +67,11 @@ export const BaseMap: FC<Props> = ({
                         />
                     </div>
                     {children}
+                    <GeolocateControl
+                        position="bottom-left"
+                        trackUserLocation={true}
+                        showUserHeading={true}
+                    />
                 </Map>
             </div>
         </>
