@@ -14,7 +14,7 @@ import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
 import { getUserConnections } from "@/services/users/getUserConnections";
 
-const proximityRadius = 5;
+const proximityRadius = 0.2; // 0.2km
 
 export default function Home() {
     const { user } = useUser();
