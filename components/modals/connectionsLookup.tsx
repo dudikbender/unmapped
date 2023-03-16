@@ -54,7 +54,7 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
                         afterLeave={() => setQuery("")}
                     >
                         <Combobox.Options
-                            className="absolute mt-1 max-h-60 w-full overflow-auto py-1 text-base shadow-lg sm:text-sm z-10
+                            className="absolute mt-1 max-h-60 w-full overflow-auto py-1 text-base shadow-lg sm:text-sm z-10 bg-white
                         border-2 border-blue-300 rounded-md focus:ring-blue-500 focus:ring-blue-500 focus:border-blue-500 focus:outline-none"
                         >
                             {filteredOptions.length === 0 && query !== "" ? (
