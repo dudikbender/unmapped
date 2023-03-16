@@ -43,6 +43,11 @@ export const CreateNoteModal: FC<Props> = ({
             return;
         }
 
+        if (!noteReceipient) {
+            alert("Select a user to drop note to...");
+            return;
+        }
+
         const note = {
             uuid: uuidv4(),
             latitude: coordinates?.lat,

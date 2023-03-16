@@ -30,9 +30,8 @@ export default function Home() {
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [blockRead, setBlockRead] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
-    const [users, setUsers] = useState<any>(null);
     const { notes, setNotesInStore } = useNoteStore();
-    const { connections, setConnectionsInStore } = useConnectionStore();
+    const { setConnectionsInStore } = useConnectionStore();
 
     useEffect(() => {
         const getUserConnectionsFromDatabase = async () => {
