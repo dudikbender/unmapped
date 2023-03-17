@@ -2,33 +2,36 @@ import { useState } from "react";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
+import { NotesList } from "./notes/notesModal";
+import { ConnectionsModal } from "./connections/connectionsModal";
+import { ShareModal } from "./share/shareModal";
 
 type MenuItem = {
     text: string;
     icon: string;
-    link: string;
+    activation: string;
 };
 
 export const menuItems: Record<string, MenuItem> = {
     notes: {
         text: "notes",
         icon: "notes",
-        link: "/notes"
+        activation: "notes"
     },
     connections: {
         text: "connections",
         icon: "connections",
-        link: "/connections"
+        activation: "connections"
     },
     share: {
         text: "share",
         icon: "share",
-        link: "/share"
+        activation: "share"
     },
     profile: {
-        text: "profile",
-        icon: "profile",
-        link: "/profile"
+        text: "settings",
+        icon: "settings",
+        activation: "settings"
     }
 };
 
@@ -38,6 +41,7 @@ function classNames(...classes: string[]) {
 
 export const Menu = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [secondaryMenu, setSecondaryMenu] = useState<string>("");
     return (
         <>
             <div
@@ -64,13 +68,38 @@ export const Menu = () => {
                                 className="rounded-md bg-white w-100 p-2 my-1 mr-4 cursor-default text-lg
                                         hover:bg-blue-400 hover:text-white hover:cursor-pointer"
                             >
-                                <Link href={menuItems[key].link}>
+                                <button
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        setSecondaryMenu(
+                                            menuItems[key].activation
+                                        );
+                                    }}
+                                >
                                     {menuItems[key].text}
-                                </Link>
+                                </button>
                             </div>
                         ))}
                     </div>
                 )}
+            </div>
+            <div>
+                <NotesList
+                    show={secondaryMenu === "notes"}
+                    handleClose={() => setSecondaryMenu("")}
+                />
+            </div>
+            <div>
+                <ConnectionsModal
+                    show={secondaryMenu === "connections"}
+                    handleClose={() => setSecondaryMenu("")}
+                />
+            </div>
+            <div>
+                <ShareModal
+                    show={secondaryMenu === "share"}
+                    handleClose={() => setSecondaryMenu("")}
+                />
             </div>
         </>
     );
