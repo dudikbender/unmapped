@@ -48,7 +48,7 @@ export const Menu = () => {
                     menuOpen
                         ? "bg-blue-100 italic"
                         : "bg-white hover:bg-blue-400 hover:text-white",
-                    "rounded-md m-auto p-2 cursor-default text-lg hover:cursor-pointer"
+                    "rounded-md p-2 cursor-default text-lg hover:cursor-pointer"
                 )}
                 onClick={() => setMenuOpen(!menuOpen)}
             >
@@ -60,23 +60,18 @@ export const Menu = () => {
             </div>
             <div>
                 {menuOpen && (
-                    <div className="z-10 absolute flex flex-col -right-4 top-16 w-100 transition ease-in-out delay-150">
+                    <div className="z-10 absolute flex flex-col -right-4 top-14 w-100 transition ease-in-out delay-150">
                         {Object.keys(menuItems).map((key) => (
                             <div
                                 key={key}
                                 className="rounded-md bg-white w-100 p-2 my-1 mr-4 cursor-default text-lg
                                         hover:bg-blue-400 hover:text-white hover:cursor-pointer"
+                                onClick={() => {
+                                    setMenuOpen(false);
+                                    setSecondaryMenu(menuItems[key].activation);
+                                }}
                             >
-                                <button
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        setSecondaryMenu(
-                                            menuItems[key].activation
-                                        );
-                                    }}
-                                >
-                                    {menuItems[key].text}
-                                </button>
+                                <p>{menuItems[key].text}</p>
                             </div>
                         ))}
                     </div>
