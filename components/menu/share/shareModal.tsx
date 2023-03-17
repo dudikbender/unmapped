@@ -16,14 +16,6 @@ export function ShareModal({ show, handleClose }: Props) {
         return;
     };
 
-    /* const copyToClipboard = (str: string) => {
-        if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
-            console.log("copying to clipboard");
-            return navigator.clipboard.writeText(str);
-        }
-        return Promise.reject("The Clipboard API is not available.");
-    }; */
-
     useEffect(() => {
         if (copied) {
             setTimeout(() => {
@@ -31,7 +23,6 @@ export function ShareModal({ show, handleClose }: Props) {
             }, 2000);
         }
     }, [copied]);
-    console.log(copied);
 
     return (
         <Transition.Root show={show} as={Fragment}>

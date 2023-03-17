@@ -10,7 +10,6 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { Note } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
-import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
 import { getUserConnections } from "@/services/users/getUserConnections";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
@@ -60,7 +59,8 @@ export default function Home() {
             setSelectedPoint(point);
             setNoteCreateModalOpen(true);
         } else {
-            if (!blockRead && currentZoom > 13) {
+            if (!blockRead && currentZoom < 13) {
+                setSelectedPoint(point);
                 setZoomAlert(true);
             }
         }
@@ -80,10 +80,13 @@ export default function Home() {
         }
     }, [noteReadModalOpen]);
 
+    console.log("Zoom level: ", currentZoom);
+
     return (
         <div className="relative">
             <BaseMap
                 mapCenter={userLatLng}
+                mapZoom={currentZoom}
                 onSelectedPoint={(point) => {
                     handleSelectedPoint(point);
                 }}
@@ -175,7 +178,9 @@ export default function Home() {
                     show={zoomAlert}
                     handleClose={() => {
                         setZoomAlert(false);
+                        setCurrentZoom(13);
                     }}
+                    selectedPoint={selectedPoint}
                 />
             </BaseMap>
         </div>
