@@ -14,6 +14,7 @@ import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
 import { getUserConnections } from "@/services/users/getUserConnections";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
+import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 
 const proximityRadius = 0.2; // 0.2km
 
@@ -30,8 +31,10 @@ export default function Home() {
     const [noteCreateModalOpen, setNoteCreateModalOpen] = useState(false);
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [blockRead, setBlockRead] = useState(false);
+    const [zoomAlert, setZoomAlert] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [distanceToNote, setDistanceToNote] = useState<number>(0);
+    const [currentZoom, setCurrentZoom] = useState<number>(0);
     const { notes, setNotesInStore } = useNoteStore();
     const { setConnectionsInStore } = useConnectionStore();
 
@@ -53,9 +56,13 @@ export default function Home() {
     });
 
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
-        if (!blockRead) {
+        if (!blockRead && currentZoom > 13) {
             setSelectedPoint(point);
             setNoteCreateModalOpen(true);
+        } else {
+            if (!blockRead) {
+                setZoomAlert(true);
+            }
         }
     };
 
@@ -73,6 +80,8 @@ export default function Home() {
         }
     }, [noteReadModalOpen]);
 
+    console.log(currentZoom);
+
     return (
         <div className="relative">
             <BaseMap
@@ -86,6 +95,7 @@ export default function Home() {
                         lng: e.coords.longitude
                     })
                 }
+                currentZoomLevel={(e) => setCurrentZoom(e)}
             >
                 <div className="absolute flex left-0 top-0 pt-4 ml-2 justify-items-center">
                     <UserButton />
@@ -162,6 +172,12 @@ export default function Home() {
                             ? DistanceToNoteUnit.METERS
                             : DistanceToNoteUnit.KILOMETERS
                     }
+                />
+                <ZoomInAlert
+                    show={zoomAlert}
+                    handleClose={() => {
+                        setZoomAlert(false);
+                    }}
                 />
             </BaseMap>
         </div>

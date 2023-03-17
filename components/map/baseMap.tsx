@@ -1,4 +1,4 @@
-import { FC, useState, useCallback } from "react";
+import { FC, useState, useCallback, useEffect } from "react";
 import Map, {
     Source,
     Layer,
@@ -12,19 +12,20 @@ type Props = {
     mapCenter: { lat: number; lng: number };
     onSelectedPoint: (point: { lat: number; lng: number }) => void;
     userCurrentLocation?: (value: GeolocateResultEvent) => void;
+    currentZoomLevel?: (value: number) => void;
 };
 
 export const BaseMap: FC<Props> = ({
     children,
     mapCenter,
     onSelectedPoint,
-    userCurrentLocation
+    userCurrentLocation,
+    currentZoomLevel
 }) => {
     const [features, setFeatures] = useState({
         type: "FeatureCollection",
         features: []
     });
-    const [zoomLevel, setZoomLevel] = useState<number>(14);
     const geolocateControlRef = useCallback((ref: any) => {
         if (ref) {
             // Activate half a second after map
@@ -33,6 +34,7 @@ export const BaseMap: FC<Props> = ({
             }, 500);
         }
     }, []);
+
     return (
         <>
             <div style={{ height: "100vh", width: "100%" }}>
@@ -49,7 +51,9 @@ export const BaseMap: FC<Props> = ({
                         onSelectedPoint(e.lngLat);
                     }}
                     onZoomEnd={(e) => {
-                        setZoomLevel(e.viewState.zoom);
+                        if (currentZoomLevel) {
+                            currentZoomLevel(e.viewState.zoom);
+                        }
                     }}
                     projection="globe"
                     terrain={{

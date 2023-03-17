@@ -2,25 +2,12 @@ import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
-export enum DistanceToNoteUnit {
-    METERS = "metres",
-    KILOMETERS = "kilometres",
-    MILES = "miles"
-}
-
 type Props = {
     show: boolean;
     handleClose: () => void;
-    distanceToNote: number | string;
-    distanceToNoteUnit: DistanceToNoteUnit;
 };
 
-export function TooFarAlert({
-    show,
-    handleClose,
-    distanceToNote,
-    distanceToNoteUnit = DistanceToNoteUnit.METERS
-}: Props) {
+export function ZoomInAlert({ show, handleClose }: Props) {
     return (
         <Transition.Root show={show} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={handleClose}>
@@ -60,15 +47,12 @@ export function TooFarAlert({
                                             as="h3"
                                             className="text-base font-semibold leading-6 text-gray-900"
                                         >
-                                            {`You're too far away...`}
+                                            {`Bit high up, don't you think?`}
                                         </Dialog.Title>
                                         <div className="mt-2">
                                             <p className="text-sm text-gray-500">
                                                 {`You'll have to get a bit closer
-                                                to open this note. Maybe about 
-                                                ${distanceToNote}
-                                                ${" "}
-                                                ${distanceToNoteUnit}?`}
+                                                to drop a note. Zoom in a bit more...`}
                                             </p>
                                         </div>
                                     </div>
