@@ -5,6 +5,8 @@ import { Note } from "@/services/types/note";
 import { useUser } from "@clerk/nextjs";
 import { useConnectionStore } from "@/services/stores/connectionStore";
 import { UserConnection } from "@/services/types/connections";
+import { useMap } from "react-map-gl";
+import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     show: boolean;
@@ -15,6 +17,7 @@ export function NotesList({ show, handleClose }: Props) {
     const { user } = useUser();
     const { notes } = useNoteStore();
     const { connections } = useConnectionStore();
+    const { baseMap } = useMap();
     const receivedNotes = notes
         .filter((note: Note) => note.to_user_id === user?.id)
         .sort((a: any, b: any) => {
@@ -31,6 +34,15 @@ export function NotesList({ show, handleClose }: Props) {
                 new Date(a.created_at).getTime()
             );
         });
+
+    const flyToNoteLocation = (noteLocation: { lat: number; lng: number }) => {
+        baseMap?.flyTo({
+            center: [noteLocation.lng, noteLocation.lat],
+            zoom: 15,
+            speed: 1.25
+        });
+        handleClose();
+    };
 
     return (
         <Transition.Root show={show} as={Fragment}>
@@ -87,6 +99,15 @@ export function NotesList({ show, handleClose }: Props) {
                                                             )[0]?.fullName
                                                         }
                                                     </span>
+                                                    <ArrowRightCircleIcon
+                                                        className="h-5 w-5 inline-block ml-2 text-blue-400 hover:text-blue-500 hover:cursor-pointer"
+                                                        onClick={() =>
+                                                            flyToNoteLocation({
+                                                                lat: note.latitude,
+                                                                lng: note.longitude
+                                                            })
+                                                        }
+                                                    />
                                                 </li>
                                             </div>
                                         ))}
@@ -121,6 +142,15 @@ export function NotesList({ show, handleClose }: Props) {
                                                             )[0]?.fullName
                                                         }
                                                     </span>
+                                                    <ArrowRightCircleIcon
+                                                        className="h-5 w-5 inline-block ml-2 text-blue-400 hover:text-blue-500 hover:cursor-pointer"
+                                                        onClick={() =>
+                                                            flyToNoteLocation({
+                                                                lat: note.latitude,
+                                                                lng: note.longitude
+                                                            })
+                                                        }
+                                                    />
                                                 </li>
                                             </div>
                                         ))}
