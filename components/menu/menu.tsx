@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Dialog, Transition } from "@headlessui/react";
 
 type MenuItem = {
     text: string;
@@ -42,8 +43,8 @@ export const Menu = () => {
             <div
                 className={classNames(
                     menuOpen
-                        ? "bg-gray-200 italic"
-                        : "bg-white hover:bg-gray-400 hover:text-white",
+                        ? "bg-blue-100 italic"
+                        : "bg-white hover:bg-blue-400 hover:text-white",
                     "rounded-md m-auto p-2 cursor-default text-lg hover:cursor-pointer"
                 )}
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -56,12 +57,12 @@ export const Menu = () => {
             </div>
             <div>
                 {menuOpen && (
-                    <div className="absolute flex flex-col -right-4 top-16 w-100">
+                    <div className="absolute flex flex-col -right-4 top-16 w-100 transition ease-in-out delay-150">
                         {Object.keys(menuItems).map((key) => (
                             <div
                                 key={key}
                                 className="rounded-md bg-white w-100 p-2 my-1 mr-4 cursor-default text-lg
-                                        hover:bg-gray-400 hover:text-white hover:cursor-pointer"
+                                        hover:bg-blue-400 hover:text-white hover:cursor-pointer"
                             >
                                 <Link href={menuItems[key].link}>
                                     {menuItems[key].text}

@@ -13,6 +13,7 @@ import { getNotes } from "@/services/database/getNotes";
 import { getUserLocation } from "@/services/users/getUserLocation";
 import { haversine } from "@/services/geo/haversine";
 import { getUserConnections } from "@/services/users/getUserConnections";
+import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
 
 const proximityRadius = 0.2; // 0.2km
 
@@ -30,6 +31,7 @@ export default function Home() {
     const [noteReadModalOpen, setNoteReadModalOpen] = useState(false);
     const [blockRead, setBlockRead] = useState(false);
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+    const [distanceToNote, setDistanceToNote] = useState<number>(0);
     const { notes, setNotesInStore } = useNoteStore();
     const { setConnectionsInStore } = useConnectionStore();
 
@@ -57,19 +59,6 @@ export default function Home() {
         }
     };
 
-    /* const userLocation = async () => {
-        const location = await getUserLocation();
-        return location;
-    };
-
-    useEffect(() => {
-        userLocation().then((location) => {
-            if (location !== null) {
-                setUserLatLng(location);
-            }
-        });
-    }, []); */
-
     useEffect(() => {
         const getNotesFromDatabase = async () => {
             const notes = await getNotes();
@@ -83,6 +72,8 @@ export default function Home() {
             setNoteCreateModalOpen(false);
         }
     }, [noteReadModalOpen]);
+
+    console.log("Distance to note: ", distanceToNote);
 
     return (
         <div className="relative">
@@ -122,7 +113,7 @@ export default function Home() {
                                     setSelectedNote(note);
                                     setNoteReadModalOpen(true);
                                 } else {
-                                    alert("You are too far away");
+                                    setDistanceToNote(noteDistance);
                                     setBlockRead(true);
                                 }
                             }}
@@ -153,6 +144,26 @@ export default function Home() {
                         setNoteReadModalOpen(false);
                         setNoteCreateModalOpen(false);
                     }}
+                />
+                <TooFarAlert
+                    show={blockRead}
+                    handleClose={() => {
+                        setBlockRead(false);
+                    }}
+                    distanceToNote={
+                        distanceToNote < 2
+                            ? Math.round(
+                                  distanceToNote * 1000 - 100
+                              ).toLocaleString()
+                            : distanceToNote > 10
+                            ? Math.round(distanceToNote).toLocaleString()
+                            : distanceToNote.toFixed(1)
+                    }
+                    distanceToNoteUnit={
+                        distanceToNote < 2
+                            ? DistanceToNoteUnit.METERS
+                            : DistanceToNoteUnit.KILOMETERS
+                    }
                 />
             </BaseMap>
         </div>

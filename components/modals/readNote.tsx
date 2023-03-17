@@ -10,7 +10,6 @@ import {
     updateNoteContent,
     updateNoteCoordinates
 } from "@/services/database/updateNote";
-import { v4 as uuidv4 } from "uuid";
 
 type Props = {
     show: boolean;
