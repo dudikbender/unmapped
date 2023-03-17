@@ -12,6 +12,9 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
     const [selected, setSelected] = useState<UserConnection | null>(null);
     const [query, setQuery] = useState<string>("");
     const { connections } = useConnectionStore();
+    const connectionsOrdered = connections.sort((a: any, b: any) =>
+        a?.lastName.localeCompare(b?.lastName)
+    );
 
     useEffect(() => {
         handleSelection(selected);
@@ -19,8 +22,8 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
 
     const filteredOptions =
         query === ""
-            ? connections
-            : connections.filter((connection: UserConnection) =>
+            ? connectionsOrdered
+            : connectionsOrdered.filter((connection: UserConnection) =>
                   connection?.fullName
                       .toLowerCase()
                       .replace(/\s+/g, "")
