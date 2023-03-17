@@ -35,7 +35,7 @@ export const BaseMap: FC<Props> = ({
             // Activate half a second after map
             setTimeout(() => {
                 ref.trigger();
-            }, 500);
+            }, 250);
         }
     }, []);
 

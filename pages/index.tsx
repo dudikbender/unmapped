@@ -80,8 +80,6 @@ export default function Home() {
         }
     }, [noteReadModalOpen]);
 
-    console.log("Zoom level: ", currentZoom);
-
     return (
         <div className="relative">
             <BaseMap

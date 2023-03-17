@@ -11,14 +11,12 @@ type Props = {
 
 export function ZoomInAlert({ show, handleClose, selectedPoint }: Props) {
     const { baseMap } = useMap();
-    console.log("Center", selectedPoint);
     const zoomToLevel = (level: number) => {
         baseMap?.flyTo({
             center: [selectedPoint.lng, selectedPoint.lat],
             zoom: level,
             speed: 1
         });
-        //baseMap?.setZoom(level);
     };
     return (
         <Transition.Root show={show} as={Fragment}>
