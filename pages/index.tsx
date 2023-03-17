@@ -60,7 +60,7 @@ export default function Home() {
             setSelectedPoint(point);
             setNoteCreateModalOpen(true);
         } else {
-            if (!blockRead) {
+            if (!blockRead && currentZoom > 13) {
                 setZoomAlert(true);
             }
         }
