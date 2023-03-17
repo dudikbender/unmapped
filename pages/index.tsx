@@ -73,12 +73,10 @@ export default function Home() {
         }
     }, [noteReadModalOpen]);
 
-    console.log("Distance to note: ", distanceToNote);
-
     return (
         <div className="relative">
             <BaseMap
-                initialCenter={userLatLng}
+                mapCenter={userLatLng}
                 onSelectedPoint={(point) => {
                     handleSelectedPoint(point);
                 }}
