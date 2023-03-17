@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
 import { useUser } from "@clerk/nextjs";
@@ -71,7 +70,7 @@ export function NotesList({ show, handleClose }: Props) {
                                         {receivedNotes.map((note: Note) => (
                                             <div
                                                 key={note.uuid}
-                                                className="py-1"
+                                                className="py-1 cursor-default"
                                             >
                                                 <li>
                                                     {note.content}
@@ -105,7 +104,7 @@ export function NotesList({ show, handleClose }: Props) {
                                         {sentNotes.map((note: Note) => (
                                             <div
                                                 key={note.uuid}
-                                                className="py-1"
+                                                className="py-1 cursor-default"
                                             >
                                                 <li>
                                                     {note.content}

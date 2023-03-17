@@ -80,8 +80,6 @@ export default function Home() {
         }
     }, [noteReadModalOpen]);
 
-    console.log(currentZoom);
-
     return (
         <div className="relative">
             <BaseMap

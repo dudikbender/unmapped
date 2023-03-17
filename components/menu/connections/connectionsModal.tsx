@@ -49,7 +49,7 @@ export function ConnectionsModal({ show, handleClose }: Props) {
                                             (connection: UserConnection) => (
                                                 <div
                                                     key={connection.uuid}
-                                                    className="py-1"
+                                                    className="py-1 cursor-default"
                                                 >
                                                     <li>
                                                         {connection.fullName}
