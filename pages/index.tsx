@@ -3,6 +3,7 @@ import { UserButton, useUser } from "@clerk/nextjs";
 import { BaseMap } from "@/components/map/baseMap";
 import { NoteMarker } from "@/components/map/noteMarker";
 import { Menu } from "@/components/menu/menu";
+import { MapStyleMenu } from "@/components/menu/mapStyleMenu";
 import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
@@ -14,6 +15,7 @@ import { haversine } from "@/services/geo/haversine";
 import { getUserConnections } from "@/services/users/getUserConnections";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
 import { ZoomInAlert } from "@/components/modals/zoomInAlert";
+import { MapStyle } from "@/services/types/mapObjects";
 
 const proximityRadius = 0.2; // 0.2km
 
@@ -34,6 +36,7 @@ export default function Home() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [distanceToNote, setDistanceToNote] = useState<number>(0);
     const [currentZoom, setCurrentZoom] = useState<number>(0);
+    const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.LIGHT);
     const { notes, setNotesInStore } = useNoteStore();
     const { setConnectionsInStore } = useConnectionStore();
 
@@ -84,6 +87,7 @@ export default function Home() {
         <div className="relative">
             <BaseMap
                 mapCenter={userLatLng}
+                mapStyle={mapStyle}
                 mapZoom={currentZoom}
                 onSelectedPoint={(point) => {
                     handleSelectedPoint(point);
@@ -101,6 +105,11 @@ export default function Home() {
                 </div>
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
                     <Menu />
+                </div>
+                <div className="absolute flex right-0 top-12 pt-4 mr-2 justify-items-center">
+                    <MapStyleMenu
+                        handleStyleSelection={(e) => setMapStyle(e)}
+                    />
                 </div>
                 {visibleNotes.map((note: Note) => {
                     const noteDistance = haversine(

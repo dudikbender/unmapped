@@ -8,9 +8,11 @@ import Map, {
     AttributionControl
 } from "react-map-gl";
 import { UserLocator } from "./userLocator";
+import { MapStyle } from "@/services/types/mapObjects";
 
 type Props = {
     children: React.ReactNode | Array<React.ReactNode>;
+    mapStyle?: MapStyle;
     mapCenter: { lat: number; lng: number };
     mapZoom?: number;
     onSelectedPoint: (point: { lat: number; lng: number }) => void;
@@ -20,6 +22,7 @@ type Props = {
 
 export const BaseMap: FC<Props> = ({
     children,
+    mapStyle = MapStyle.DARK,
     mapCenter,
     mapZoom,
     onSelectedPoint,
@@ -50,7 +53,7 @@ export const BaseMap: FC<Props> = ({
                             longitude: mapCenter.lng,
                             zoom: mapZoom || 1
                         }}
-                        mapStyle="mapbox://styles/mapbox/light-v9"
+                        mapStyle={mapStyle}
                         mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
                         pitch={0}
                         onClick={(e) => {

@@ -60,7 +60,7 @@ export const Menu = () => {
             </div>
             <div>
                 {menuOpen && (
-                    <div className="absolute flex flex-col -right-4 top-16 w-100 transition ease-in-out delay-150">
+                    <div className="z-10 absolute flex flex-col -right-4 top-16 w-100 transition ease-in-out delay-150">
                         {Object.keys(menuItems).map((key) => (
                             <div
                                 key={key}
