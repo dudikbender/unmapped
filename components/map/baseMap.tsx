@@ -57,12 +57,17 @@ export const BaseMap: FC<Props> = ({
                     }}
                     mapStyle="mapbox://styles/mapbox/light-v9"
                     mapboxAccessToken={process.env.NEXT_PUBLIC_MAPBOX_TOKEN}
-                    pitch={45}
+                    pitch={0}
                     onClick={(e) => {
                         onSelectedPoint(e.lngLat);
                     }}
                     onZoomEnd={(e) => {
                         setZoomLevel(e.viewState.zoom);
+                    }}
+                    projection="globe"
+                    terrain={{
+                        source: "mapbox-raster-dem",
+                        exaggeration: 2
                     }}
                 >
                     <div>
