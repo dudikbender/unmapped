@@ -55,7 +55,7 @@ export function ConnectionsModal({
                                 <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                     <div>
                                         <div
-                                            key="close-modal-button"
+                                            key="add-connection-button"
                                             aria-details="close-modal-button"
                                             className="absolute p-1 m-2 flex right-10 top-0 text-gray-900 ring-1 ring-blue-500 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
                                             onClick={handleAddConnection}
@@ -91,7 +91,6 @@ export function ConnectionsModal({
                                                             setShowProfile(
                                                                 true
                                                             );
-                                                            //handleClose();
                                                         }}
                                                     >
                                                         <div className="relative h-[30px] w-[30px]">

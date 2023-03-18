@@ -1,16 +1,28 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
-import Image from "next/image";
-import { User } from "@/services/types/user";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useNoteStore } from "@/services/stores/noteStore";
+import { useMap } from "react-map-gl";
+import { SearchUsersInput } from "./searchUsersInput";
 
 type Props = {
     show: boolean;
-    user?: User;
     handleClose: () => void;
 };
 
-export function AddConnectionModal({ show, user, handleClose }: Props) {
+export function SearchConnectionModal({ show, handleClose }: Props) {
+    const { notes } = useNoteStore();
+    const { baseMap } = useMap();
+
+    const flyToNoteLocation = (noteLocation: { lat: number; lng: number }) => {
+        baseMap?.flyTo({
+            center: [noteLocation.lng, noteLocation.lat],
+            zoom: 15,
+            speed: 1.25
+        });
+        handleClose();
+    };
+
     return (
         <Transition.Root show={show} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={handleClose}>
@@ -37,7 +49,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                            <Dialog.Panel className="relative w-[90%] h-[80%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                 <div>
                                     <div
                                         key="close-modal-button"
@@ -48,24 +60,15 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                         <XMarkIcon className="h-6 w-6" />
                                     </div>
                                     <div className="flex items-center">
-                                        <div className="relative h-[50px] w-[50px]">
-                                            <Image
-                                                className="rounded-full object-cover"
-                                                src={
-                                                    user?.profileImageUrl ??
-                                                    "/placeholder-author.png"
-                                                }
-                                                alt="Connection Image"
-                                                fill={true}
-                                            />
-                                        </div>
                                         <Dialog.Title
                                             as="h3"
                                             className="text-base font-semibold leading-6 text-gray-900 ml-4"
                                         >
-                                            {user?.fullName}
+                                            Add Connection
                                         </Dialog.Title>
                                     </div>
+                                    <div className="mt-6"></div>
+                                    <SearchUsersInput />
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>

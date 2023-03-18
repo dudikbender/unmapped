@@ -3,7 +3,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import { NotesList } from "./notes/notesModal";
 import { ConnectionsModal } from "./connections/connectionsModal";
-import { AddConnectionModal } from "./connections/addConnectionModal";
+import { SearchConnectionModal } from "./connections/searchConnectionsModal";
 import { ShareModal } from "./share/shareModal";
 import { UserConnection } from "@/services/types/connections";
 
@@ -98,7 +98,7 @@ export const Menu = () => {
                 />
             </div>
             <div>
-                <AddConnectionModal
+                <SearchConnectionModal
                     show={secondaryMenu === "add-connection"}
                     handleClose={() => setSecondaryMenu("")}
                 />

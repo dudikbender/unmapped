@@ -1,6 +1,7 @@
 import { getConnections } from "../database/getConnections";
 import { getUserList } from "@/services/users/getUser";
 import { UserConnection } from "../types/connections";
+import { User } from "../types/user";
 
 export const getUserConnections = async (
     userId: string | undefined
@@ -32,23 +33,26 @@ export const getUserConnections = async (
     const userList = await getUserList(
         connectionList.map((connection: any) => connection.userId)
     );
-    const filteredUserList = userList.map((user: any) => {
+    const filteredUserList = userList.map((user: User) => {
         return {
-            firstName: user.first_name,
-            lastName: user.last_name,
-            fullName: `${user.first_name} ${user.last_name}`,
-            profileImageUrl: user.profile_image_url,
-            id: user.id
+            firstName: user.firstName,
+            lastName: user.lastName,
+            fullName: `${user.firstName} ${user.lastName}`,
+            profileImageUrl: user.profileImageUrl,
+            uuid: user.uuid
         };
     });
+    console.log("filteredUserList", filteredUserList);
     const combinedConnectionData = connectionList.map((connection: any) => {
         const user = filteredUserList.find(
             (user: any) => user.uuid === connection.userId
         );
+        //delete user.id;
         return {
             ...connection,
             ...user
         };
     });
+    console.log("combinedConnectionData", combinedConnectionData);
     return combinedConnectionData;
 };
