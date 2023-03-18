@@ -4,13 +4,19 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { UserConnection } from "@/services/types/connections";
 import { ConnectionProfileModal } from "./connectionProfileModal";
 import Image from "next/image";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     show: boolean;
     handleClose: () => void;
+    handleAddConnection: () => void;
 };
 
-export function ConnectionsModal({ show, handleClose }: Props) {
+export function ConnectionsModal({
+    show,
+    handleClose,
+    handleAddConnection
+}: Props) {
     const { connections } = useConnectionStore();
     const [selectedProfile, setSelectedProfile] =
         useState<UserConnection | null>(null);
@@ -36,7 +42,7 @@ export function ConnectionsModal({ show, handleClose }: Props) {
                     </Transition.Child>
 
                     <div className="fixed inset-0 z-10 overflow-y-auto">
-                        <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                        <div className="flex min-h-full items-start justify-center p-4 text-center sm:items-center sm:p-0">
                             <Transition.Child
                                 as={Fragment}
                                 enter="ease-out duration-500"
@@ -46,8 +52,16 @@ export function ConnectionsModal({ show, handleClose }: Props) {
                                 leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                             >
-                                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                                <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                     <div>
+                                        <div
+                                            key="close-modal-button"
+                                            aria-details="close-modal-button"
+                                            className="absolute p-1 m-2 flex right-0 top-0 text-gray-900 border-2 border-blue-500 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
+                                            onClick={handleAddConnection}
+                                        >
+                                            <PlusIcon className="h-6 w-6" />
+                                        </div>
                                         <Dialog.Title
                                             as="h3"
                                             className="text-base font-semibold leading-6 text-gray-900"
