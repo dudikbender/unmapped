@@ -69,10 +69,38 @@ export default function Home() {
         }
     };
 
+    // Get notes from database for this user, iterating through them and add them to the note store
     useEffect(() => {
         const getNotesFromDatabase = async () => {
-            const notes = await getNotes();
-            setNotesInStore(notes);
+            const notesResponse = await getNotes(user?.id);
+            if (!notesResponse) {
+                return;
+            }
+            const { userNotes, count } = notesResponse;
+            let notesRetrieved = 0;
+            setNotesInStore(userNotes);
+            notesRetrieved += userNotes.length;
+            if (!count) {
+                return;
+            }
+            if (userNotes.length < count) {
+                const getMoreNotes = async () => {
+                    const moreNotes = await getNotes(
+                        user?.id,
+                        notesRetrieved,
+                        notesRetrieved + 100
+                    );
+                    if (!moreNotes) {
+                        return;
+                    }
+                    setNotesInStore([...notes, ...moreNotes.userNotes]);
+                    notesRetrieved += moreNotes.userNotes.length;
+                    if (notesRetrieved < count) {
+                        getMoreNotes();
+                    }
+                };
+                getMoreNotes();
+            }
         };
         getNotesFromDatabase();
     }, []);

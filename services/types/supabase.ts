@@ -43,7 +43,7 @@ export interface Database {
                     created_at: string | null;
                     id: number;
                     last_read: string | null;
-                    note_id: number;
+                    note_id: string;
                     starred: boolean | null;
                     user_id: string;
                 };
@@ -51,7 +51,7 @@ export interface Database {
                     created_at?: string | null;
                     id?: number;
                     last_read?: string | null;
-                    note_id: number;
+                    note_id: string;
                     starred?: boolean | null;
                     user_id: string;
                 };
@@ -59,7 +59,7 @@ export interface Database {
                     created_at?: string | null;
                     id?: number;
                     last_read?: string | null;
-                    note_id?: number;
+                    note_id?: string;
                     starred?: boolean | null;
                     user_id?: string;
                 };

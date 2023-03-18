@@ -9,7 +9,7 @@ const supabase = createClient<Database>(
 
 export const updateNoteContent = async (
     newContent: string | undefined,
-    noteUUID: string | undefined
+    noteUUID: string | undefined | null
 ): Promise<any | PostgrestError> => {
     if (newContent === undefined || noteUUID === undefined) {
         return;

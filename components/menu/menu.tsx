@@ -4,6 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { NotesList } from "./notes/notesModal";
 import { ConnectionsModal } from "./connections/connectionsModal";
 import { ShareModal } from "./share/shareModal";
+import { UserConnection } from "@/services/types/connections";
 
 type MenuItem = {
     text: string;
@@ -41,6 +42,8 @@ function classNames(...classes: string[]) {
 export const Menu = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [secondaryMenu, setSecondaryMenu] = useState<string>("");
+    const [selectedConnection, setSelectedConnection] =
+        useState<UserConnection>();
     return (
         <>
             <div
