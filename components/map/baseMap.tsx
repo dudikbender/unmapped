@@ -4,8 +4,7 @@ import Map, {
     Source,
     Layer,
     NavigationControl,
-    GeolocateResultEvent,
-    AttributionControl
+    GeolocateResultEvent
 } from "react-map-gl";
 import { UserLocator } from "./userLocator";
 import { MapStyle } from "@/services/types/mapObjects";
@@ -22,7 +21,7 @@ type Props = {
 
 export const BaseMap: FC<Props> = ({
     children,
-    mapStyle = MapStyle.DARK,
+    mapStyle = MapStyle.LIGHT,
     mapCenter,
     mapZoom,
     onSelectedPoint,
@@ -87,11 +86,6 @@ export const BaseMap: FC<Props> = ({
                             />
                         </div>
                         {children}
-                        <AttributionControl
-                            compact={true}
-                            position={"bottom-left"}
-                            customAttribution="Upmapped 2023"
-                        />
                     </Map>
                 </MapProvider>
             </div>

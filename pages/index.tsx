@@ -112,7 +112,7 @@ export default function Home() {
     }, [noteReadModalOpen]);
 
     return (
-        <div className="relative">
+        <div className="relative h-[100%] w-[100%]">
             <BaseMap
                 mapCenter={userLatLng}
                 mapStyle={mapStyle}
@@ -128,7 +128,12 @@ export default function Home() {
                 }
                 currentZoomLevel={(e) => setCurrentZoom(e)}
             >
-                <div className="absolute flex left-0 top-0 pt-4 ml-2 justify-items-center">
+                <div className="absolute flex left-0 top-0 pt-4 ml-2 cursor-pointer">
+                    <span className="py-1 px-2 rounded-md bg-blue-500 bg-opacity-50 font-semibold text-white">
+                        unmpd
+                    </span>
+                </div>
+                <div className="absolute flex left-0 bottom-12 pt-4 ml-2 justify-items-center">
                     <UserButton />
                 </div>
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">

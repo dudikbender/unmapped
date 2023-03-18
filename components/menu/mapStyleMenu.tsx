@@ -49,7 +49,7 @@ function classNames(...classes: string[]) {
 
 export const MapStyleMenu: FC<Props> = ({ handleStyleSelection }) => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [style, setStyle] = useState<MapStyle>(MapStyle.STREETS);
+    const [style, setStyle] = useState<MapStyle>(MapStyle.LIGHT);
     return (
         <>
             <div
