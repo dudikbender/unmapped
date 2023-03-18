@@ -43,9 +43,8 @@ export const getUserConnections = async (
     });
     const combinedConnectionData = connectionList.map((connection: any) => {
         const user = filteredUserList.find(
-            (user: any) => user.id === connection.userId
+            (user: any) => user.uuid === connection.userId
         );
-        delete user.id;
         return {
             ...connection,
             ...user

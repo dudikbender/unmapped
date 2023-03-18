@@ -5,7 +5,7 @@ export const getUser = async (userId: string | undefined) => {
     return request;
 };
 
-export const getUserList = async (userIds: Array<string>) => {
+export const getUserList = async (userIds: string[]) => {
     const request = await fetch(
         `/api/users?limit=10&order_by=newest&user_ids=${userIds}`
     )

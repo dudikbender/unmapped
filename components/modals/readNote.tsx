@@ -43,9 +43,9 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     const getAuthor = async () => {
         const author = await getUser(note?.user_id);
         setAuthor({
-            name: author.first_name,
-            avatar: author.profile_image_url,
-            authorUserId: author.id
+            name: author.firstName,
+            avatar: author.profileImageUrl,
+            authorUserId: author.uuid
         });
     };
 

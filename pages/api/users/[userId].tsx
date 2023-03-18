@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { User } from "@/services/types/user";
 
 export default async function handler(
     req: NextApiRequest,
@@ -12,5 +13,13 @@ export default async function handler(
         }
     }).then((res) => res.json());
     const data = await response;
-    return res.status(200).json(data);
+    // Return only the data we need for each user
+    const user: User = {
+        uuid: data.id,
+        firstName: data.first_name,
+        lastName: data.last_name,
+        fullName: `${data.first_name} ${data.last_name}`,
+        profileImageUrl: data.profile_image_url
+    };
+    return res.status(200).json(user);
 }

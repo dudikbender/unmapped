@@ -1,24 +1,18 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { UserConnection } from "@/services/types/connections";
-import { XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useNoteStore } from "@/services/stores/noteStore";
-import { Note } from "@/services/types/note";
 import { useMap } from "react-map-gl";
 
 type Props = {
     show: boolean;
-    connection?: UserConnection;
     handleClose: () => void;
 };
 
-export function AddConnectionModal({ show, connection, handleClose }: Props) {
+export function AddConnectionModal({ show, handleClose }: Props) {
     const { notes } = useNoteStore();
     const { baseMap } = useMap();
-    const notesFromConnection = notes.filter(
-        (note: Note) => note?.user_id === connection?.userId
-    );
 
     const flyToNoteLocation = (noteLocation: { lat: number; lng: number }) => {
         baseMap?.flyTo({
