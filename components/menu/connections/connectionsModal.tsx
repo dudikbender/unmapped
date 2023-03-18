@@ -4,7 +4,7 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { UserConnection } from "@/services/types/connections";
 import { ConnectionProfileModal } from "./connectionProfileModal";
 import Image from "next/image";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 type Props = {
     show: boolean;
@@ -57,10 +57,18 @@ export function ConnectionsModal({
                                         <div
                                             key="close-modal-button"
                                             aria-details="close-modal-button"
-                                            className="absolute p-1 m-2 flex right-0 top-0 text-gray-900 border-2 border-blue-500 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
+                                            className="absolute p-1 m-2 flex right-10 top-0 text-gray-900 ring-1 ring-blue-500 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
                                             onClick={handleAddConnection}
                                         >
                                             <PlusIcon className="h-6 w-6" />
+                                        </div>
+                                        <div
+                                            key="close-modal-button"
+                                            aria-details="close-modal-button"
+                                            className="absolute p-1 m-2 flex right-0 top-0 text-gray-900 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
+                                            onClick={handleClose}
+                                        >
+                                            <XMarkIcon className="h-6 w-6" />
                                         </div>
                                         <Dialog.Title
                                             as="h3"
