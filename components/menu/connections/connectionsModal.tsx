@@ -83,7 +83,8 @@ export function ConnectionsModal({
                                                 ) => (
                                                     <div
                                                         key={connection.uuid}
-                                                        className="flex py-1 cursor-pointer"
+                                                        className="flex p-2 cursor-pointer items-center rounded-md 
+                                                        hover:bg-blue-400 hover:text-white hover:ring-1 hover:ring-blue-500 hover:ring-opacity-50"
                                                         onClick={() => {
                                                             setSelectedProfile(
                                                                 connection

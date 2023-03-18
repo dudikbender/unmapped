@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { User } from "@/services/types/user";
 
@@ -45,7 +45,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                         className="absolute p-1 m-2 flex right-0 top-0 text-gray-900 hover:bg-blue-500 hover:text-white rounded-lg cursor-pointer"
                                         onClick={handleClose}
                                     >
-                                        <XMarkIcon className="h-6 w-6" />
+                                        <ArrowLeftIcon className="h-6 w-6" />
                                     </div>
                                     <div className="flex items-center">
                                         <div className="relative h-[50px] w-[50px]">

@@ -3,7 +3,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import { NotesList } from "./notes/notesModal";
 import { ConnectionsModal } from "./connections/connectionsModal";
-import { SearchConnectionModal } from "./connections/searchConnectionsModal";
+import { SearchConnectionModal } from "./connections/searchUsersModal";
 import { ShareModal } from "./share/shareModal";
 import { UserConnection } from "@/services/types/connections";
 
