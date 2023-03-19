@@ -19,10 +19,10 @@ export const useConnectionStore = create(
                     )
                 }));
             },
-            deleteConnectionInStore: (id) => {
+            deleteConnectionInStore: (uuid) => {
                 set((state) => ({
                     connections: state.connections.filter(
-                        (connection) => connection.uuid !== uuid
+                        (c) => c.uuid !== uuid
                     )
                 }));
             }

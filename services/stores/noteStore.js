@@ -19,7 +19,7 @@ export const useNoteStore = create(
                     )
                 }));
             },
-            deleteNoteInStore: (id) => {
+            deleteNoteInStore: (uuid) => {
                 set((state) => ({
                     notes: state.notes.filter((note) => note.uuid !== uuid)
                 }));
