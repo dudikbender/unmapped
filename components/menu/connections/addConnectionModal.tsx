@@ -66,6 +66,20 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                             {user?.fullName}
                                         </Dialog.Title>
                                     </div>
+                                    <div className="flex mt-4 w-[90%] justify-between">
+                                        <button
+                                            type="button"
+                                            className="font-semibold rounded-md hover:bg-blue-500 hover:text-white p-2 focus:outline-blue-500"
+                                        >
+                                            Approve
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="font-semibold rounded-md hover:bg-gray-500 hover:text-white p-2 focus:outline-gray-500"
+                                        >
+                                            Block
+                                        </button>
+                                    </div>
                                 </div>
                             </Dialog.Panel>
                         </Transition.Child>
