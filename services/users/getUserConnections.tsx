@@ -42,17 +42,14 @@ export const getUserConnections = async (
             uuid: user.uuid
         };
     });
-    console.log("filteredUserList", filteredUserList);
     const combinedConnectionData = connectionList.map((connection: any) => {
         const user = filteredUserList.find(
             (user: any) => user.uuid === connection.userId
         );
-        //delete user.id;
         return {
             ...connection,
             ...user
         };
     });
-    console.log("combinedConnectionData", combinedConnectionData);
     return combinedConnectionData;
 };

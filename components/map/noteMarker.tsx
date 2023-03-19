@@ -1,6 +1,10 @@
 import { FC } from "react";
 import { Marker } from "react-map-gl";
-import { EnvelopeIcon, EnvelopeOpenIcon } from "@heroicons/react/24/outline";
+import {
+    EnvelopeIcon,
+    EnvelopeOpenIcon,
+    PaperAirplaneIcon
+} from "@heroicons/react/24/outline";
 
 type Props = {
     latitude: number;
@@ -37,14 +41,18 @@ export const NoteMarker: FC<Props> = ({
                         ? "bg-purple-500"
                         : availableToOpen
                         ? "bg-blue-500"
+                        : alreadyOpened
+                        ? "bg-green-600 ring-white"
                         : "bg-gray-500",
-                    "text-white p-1 rounded-full hover:cursor-pointer"
+                    "text-white p-2 rounded-full hover:cursor-pointer shadow-lg ring-inset-1 ring-1 ring-gray-900"
                 )}
             >
-                {alreadyOpened ? (
-                    <EnvelopeOpenIcon className="h-3 w-3" />
+                {currentUserIsAuthor ? (
+                    <PaperAirplaneIcon className="h-4 w-4" />
+                ) : alreadyOpened ? (
+                    <EnvelopeOpenIcon className="h-4 w-4" />
                 ) : (
-                    <EnvelopeIcon className="h-3 w-3" />
+                    <EnvelopeIcon className="h-4 w-4" />
                 )}
             </div>
         </Marker>

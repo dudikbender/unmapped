@@ -85,7 +85,9 @@ export function NotesList({ show, handleClose }: Props) {
                                                 className="py-1 cursor-default"
                                             >
                                                 <li>
-                                                    {note.content}
+                                                    {note.read
+                                                        ? note.content
+                                                        : "Still unopened..."}
                                                     {` `}
                                                     <span className="italic">
                                                         from{" "}

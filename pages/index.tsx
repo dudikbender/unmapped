@@ -8,11 +8,13 @@ import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { useConnectionStore } from "@/services/stores/connectionStore";
-import { Note } from "@/services/types/note";
+import { useNoteReadStore } from "@/services/stores/noteReadStore";
+import { Note, NoteRead } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
 import { getNotes } from "@/services/database/getNotes";
-import { haversine } from "@/services/geo/haversine";
+import { getNoteReads } from "@/services/database/getNoteReads";
 import { getUserConnections } from "@/services/users/getUserConnections";
+import { haversine } from "@/services/geo/haversine";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
 import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 import { MapStyle } from "@/services/types/mapObjects";
@@ -39,6 +41,12 @@ export default function Home() {
     const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.SATELLITE);
     const [menuSelected, setMenuSelected] = useState<string | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
+    const {
+        noteReads,
+        setNoteReadsInStore,
+        addNoteReadToStore,
+        updateNoteReadInStore
+    } = useNoteReadStore();
     const { setConnectionsInStore } = useConnectionStore();
 
     useEffect(() => {
@@ -52,11 +60,41 @@ export default function Home() {
     }, []);
 
     // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
-    const visibleNotes = notes.filter((note: Note) => {
-        if (note.user_id === user?.id || note.to_user_id === user?.id) {
-            return note;
-        }
-    });
+    const updateVisibleNotes = () => {
+        const visibleNotes = notes
+            .filter((note: Note) => {
+                if (note.user_id === user?.id || note.to_user_id === user?.id) {
+                    return note;
+                }
+            })
+            .map((note: Note) => {
+                // Check if note_uuid has been read by user and starred
+                const noteRead = noteReads.find(
+                    (noteRead: NoteRead) => noteRead.note_id === note.uuid
+                );
+                if (note.user_id === user?.id) {
+                    return { ...note, read: true, starred: false };
+                }
+                if (noteRead) {
+                    if (noteRead.starred) {
+                        return {
+                            ...note,
+                            read: true,
+                            last_read: noteRead.last_read,
+                            starred: true
+                        };
+                    }
+                    return {
+                        ...note,
+                        read: true,
+                        last_read: noteRead.last_read,
+                        starred: false
+                    };
+                }
+                return { ...note, read: false, starred: false };
+            });
+        return visibleNotes;
+    };
 
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         if (!blockRead && currentZoom > 13) {
@@ -67,6 +105,32 @@ export default function Home() {
                 setSelectedPoint(point);
                 setZoomAlert(true);
             }
+        }
+    };
+
+    const handleNoteOpen = (note: Note, noteDistanceFromUser: number) => {
+        const noteReadData = {
+            note_id: note.uuid,
+            user_id: user?.id,
+            created_at: note?.created_at,
+            last_read: new Date().toISOString(),
+            starred: false
+        };
+        if (
+            noteDistanceFromUser < proximityRadius ||
+            user?.id === note.user_id ||
+            note.read === true
+        ) {
+            setSelectedNote(note);
+            setNoteReadModalOpen(true);
+            if (note.read === false) {
+                addNoteReadToStore(noteReadData);
+            } else {
+                updateNoteReadInStore(noteReadData);
+            }
+        } else {
+            setDistanceToNote(noteDistanceFromUser);
+            setBlockRead(true);
         }
     };
 
@@ -103,8 +167,45 @@ export default function Home() {
                 getMoreNotes();
             }
         };
+        const getNoteReadsFromDatabase = async () => {
+            const notesResponse = await getNoteReads(user?.id);
+            if (!notesResponse) {
+                return;
+            }
+            const { userNoteReads, count } = notesResponse;
+            let noteReadsRetrieved = 0;
+            setNoteReadsInStore(userNoteReads);
+            noteReadsRetrieved += userNoteReads.length;
+            if (!count) {
+                return;
+            }
+            if (userNoteReads.length < count) {
+                const getMoreNotes = async () => {
+                    const moreNotes = await getNoteReads(
+                        user?.id,
+                        noteReadsRetrieved,
+                        noteReadsRetrieved + 100
+                    );
+                    if (!moreNotes) {
+                        return;
+                    }
+                    setNoteReadsInStore([...notes, ...moreNotes.userNoteReads]);
+                    noteReadsRetrieved += moreNotes.userNoteReads.length;
+                    if (noteReadsRetrieved < count) {
+                        getMoreNotes();
+                    }
+                };
+                getMoreNotes();
+            }
+        };
         getNotesFromDatabase();
+        getNoteReadsFromDatabase();
     }, []);
+
+    useEffect(() => {
+        const updatedWithVisibility = updateVisibleNotes();
+        setNotesInStore(updatedWithVisibility);
+    }, [noteReads]);
 
     useEffect(() => {
         if (noteReadModalOpen) {
@@ -158,7 +259,7 @@ export default function Home() {
                         handleStyleSelection={(e) => setMapStyle(e)}
                     />
                 </div>
-                {visibleNotes.map((note: Note) => {
+                {notes.map((note: Note) => {
                     const noteDistance = haversine(
                         userLatLng.lat,
                         userLatLng.lng,
@@ -171,7 +272,8 @@ export default function Home() {
                             onClick={() => {
                                 if (
                                     noteDistance < proximityRadius ||
-                                    user?.id === note.user_id
+                                    user?.id === note.user_id ||
+                                    note.read === true
                                 ) {
                                     setSelectedNote(note);
                                     setNoteReadModalOpen(true);
@@ -186,7 +288,7 @@ export default function Home() {
                                 latitude={note.latitude}
                                 longitude={note.longitude}
                                 availableToOpen={noteDistance < proximityRadius}
-                                alreadyOpened={false}
+                                alreadyOpened={note.read ? true : false}
                                 currentUserIsAuthor={note.user_id === user?.id}
                             />
                         </div>

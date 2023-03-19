@@ -14,7 +14,6 @@ export function SearchConnectionModal({ show, handleClose }: Props) {
     const [selectedUser, setSelectedUser] = useState<User | undefined>(
         undefined
     );
-    console.log(selectedUser);
     return (
         <>
             <Transition.Root

@@ -17,6 +17,15 @@ export const useNoteReadStore = create(
                     )
                 }));
             },
+            modifyStarredInStore: (noteRead) => {
+                set((state) => ({
+                    noteReads: state.noteReads.map((n) =>
+                        n.uuid === noteRead.uuid
+                            ? { ...n, starred: !n.starred }
+                            : n
+                    )
+                }));
+            },
             deleteNoteReadInStore: (uuid) => {
                 set((state) => ({
                     noteReads: state.noteReads.filter((n) => n.uuid !== uuid)
