@@ -1,5 +1,3 @@
-// zustand store for user connections
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

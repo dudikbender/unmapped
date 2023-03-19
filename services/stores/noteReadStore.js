@@ -1,5 +1,3 @@
-// zustand store for user connections
-
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -26,7 +24,7 @@ export const useNoteReadStore = create(
             }
         }),
         {
-            name: "connections"
+            name: "noteReads"
         }
     )
 );
