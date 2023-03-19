@@ -36,7 +36,8 @@ export default function Home() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [distanceToNote, setDistanceToNote] = useState<number>(0);
     const [currentZoom, setCurrentZoom] = useState<number>(0);
-    const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.LIGHT);
+    const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.SATELLITE);
+    const [menuSelected, setMenuSelected] = useState<string | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
     const { setConnectionsInStore } = useConnectionStore();
 
@@ -137,10 +138,23 @@ export default function Home() {
                     <UserButton />
                 </div>
                 <div className="absolute flex right-0 top-0 pt-4 mr-2 justify-items-center">
-                    <Menu />
+                    <Menu
+                        openMenu={menuSelected}
+                        handleSelection={
+                            menuSelected === "main"
+                                ? () => setMenuSelected("")
+                                : () => setMenuSelected("main")
+                        }
+                    />
                 </div>
                 <div className="absolute flex right-0 top-12 pt-4 mr-2 justify-items-center">
                     <MapStyleMenu
+                        openMenu={menuSelected}
+                        handleSelection={
+                            menuSelected === "style"
+                                ? () => setMenuSelected("")
+                                : () => setMenuSelected("style")
+                        }
                         handleStyleSelection={(e) => setMapStyle(e)}
                     />
                 </div>

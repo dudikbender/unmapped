@@ -1,16 +1,20 @@
-import { useState } from "react";
+import { useState, FC, useEffect } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
 import { NotesList } from "./notes/notesModal";
 import { ConnectionsModal } from "./connections/connectionsModal";
 import { SearchConnectionModal } from "./connections/searchUsersModal";
 import { ShareModal } from "./share/shareModal";
-import { UserConnection } from "@/services/types/connections";
 
 type MenuItem = {
     text: string;
     icon: string;
     activation: string;
+};
+
+type Props = {
+    openMenu: string | null | undefined;
+    handleSelection: () => void;
 };
 
 export const menuItems: Record<string, MenuItem> = {
@@ -40,11 +44,14 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-export const Menu = () => {
+export const Menu: FC<Props> = ({ openMenu, handleSelection }) => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [secondaryMenu, setSecondaryMenu] = useState<string>("");
-    const [selectedConnection, setSelectedConnection] =
-        useState<UserConnection>();
+
+    useEffect(() => {
+        setMenuOpen(openMenu === "main" ? true : false);
+    }, [openMenu]);
+
     return (
         <>
             <div
@@ -52,9 +59,12 @@ export const Menu = () => {
                     menuOpen
                         ? "bg-blue-100 italic"
                         : "bg-white hover:bg-blue-400 hover:text-white",
-                    "rounded-md p-2 cursor-default text-lg hover:cursor-pointer"
+                    "rounded-md p-2 cursor-default text-md hover:cursor-pointer"
                 )}
-                onClick={() => setMenuOpen(!menuOpen)}
+                onClick={() => {
+                    setMenuOpen(!menuOpen);
+                    handleSelection();
+                }}
             >
                 {!menuOpen ? (
                     <Bars3Icon className="h-6 w-6" />
@@ -68,8 +78,8 @@ export const Menu = () => {
                         {Object.keys(menuItems).map((key) => (
                             <div
                                 key={key}
-                                className="rounded-md bg-white w-100 p-2 my-1 mr-4 cursor-default text-lg
-                                        hover:bg-blue-400 hover:text-white hover:cursor-pointer"
+                                className="rounded-md bg-white w-100 p-2 my-1 mr-4 cursor-default text-md
+                                        hover:bg-blue-400 hover:text-white hover:cursor-pointer shadow-lg"
                                 onClick={() => {
                                     setMenuOpen(false);
                                     setSecondaryMenu(menuItems[key].activation);

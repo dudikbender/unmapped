@@ -3,6 +3,7 @@ import { Combobox, Transition } from "@headlessui/react";
 import { ChevronDownIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { UserConnection } from "@/services/types/connections";
 import { useConnectionStore } from "@/services/stores/connectionStore";
+import Image from "next/image";
 
 type Props = {
     handleSelection: (selected: UserConnection | null) => void;
@@ -70,7 +71,7 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
                                         <Combobox.Option
                                             key={option.uuid}
                                             className={({ active }) =>
-                                                `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                `relative cursor-default select-none py-2 pl-2 pr-4 ${
                                                     active
                                                         ? "bg-blue-400 text-white"
                                                         : "text-gray-900"
@@ -80,15 +81,28 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
                                         >
                                             {({ selected, active }) => (
                                                 <>
-                                                    <span
-                                                        className={`block truncate ${
-                                                            selected
-                                                                ? "font-medium"
-                                                                : "font-normal"
-                                                        }`}
-                                                    >
-                                                        {option.fullName}
-                                                    </span>
+                                                    <div className="flex items-center">
+                                                        <div className="relative h-[30px] w-[30px]">
+                                                            <Image
+                                                                className="rounded-full object-cover hover:border hover:border-white"
+                                                                src={
+                                                                    option?.profileImageUrl ??
+                                                                    "/placeholder-author.png"
+                                                                }
+                                                                alt="Connection Image"
+                                                                fill={true}
+                                                            />
+                                                        </div>
+                                                        <span
+                                                            className={`block truncate pl-2 ${
+                                                                selected
+                                                                    ? "font-medium"
+                                                                    : "font-normal"
+                                                            }`}
+                                                        >
+                                                            {option.fullName}
+                                                        </span>
+                                                    </div>
                                                     {selected ? (
                                                         <span
                                                             className={`absolute inset-y-0 left-0 flex items-center pl-3 ${

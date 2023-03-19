@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
     Bars3Icon,
     XMarkIcon,
@@ -8,6 +8,8 @@ import { Dialog, Transition } from "@headlessui/react";
 import { MapStyle } from "@/services/types/mapObjects";
 
 type Props = {
+    openMenu: string | null | undefined;
+    handleSelection: () => void;
     handleStyleSelection: (style: MapStyle) => void;
 };
 
@@ -17,13 +19,13 @@ type MenuItem = {
 };
 
 const styleOptions: Record<string, MenuItem> = {
+    satellite: {
+        text: "satellite",
+        style: MapStyle.SATELLITE
+    },
     streets: {
         text: "streets",
         style: MapStyle.STREETS
-    },
-    outdoors: {
-        text: "outdoors",
-        style: MapStyle.OUTDOORS
     },
     light: {
         text: "light",
@@ -32,10 +34,6 @@ const styleOptions: Record<string, MenuItem> = {
     dark: {
         text: "dark",
         style: MapStyle.DARK
-    },
-    satellite: {
-        text: "satellite",
-        style: MapStyle.SATELLITE
     },
     satelliteStreets: {
         text: "satellite streets",
@@ -47,9 +45,18 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-export const MapStyleMenu: FC<Props> = ({ handleStyleSelection }) => {
+export const MapStyleMenu: FC<Props> = ({
+    openMenu,
+    handleSelection,
+    handleStyleSelection
+}) => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [style, setStyle] = useState<MapStyle>(MapStyle.LIGHT);
+    const [style, setStyle] = useState<MapStyle>(MapStyle.SATELLITE);
+
+    useEffect(() => {
+        setMenuOpen(openMenu === "style" ? true : false);
+    }, [openMenu]);
+
     return (
         <>
             <div
@@ -59,7 +66,10 @@ export const MapStyleMenu: FC<Props> = ({ handleStyleSelection }) => {
                         : "bg-white hover:bg-blue-400 hover:text-white",
                     "rounded-md m-auto p-2 cursor-default text-lg hover:cursor-pointer"
                 )}
-                onClick={() => setMenuOpen(!menuOpen)}
+                onClick={() => {
+                    setMenuOpen(!menuOpen);
+                    handleSelection;
+                }}
             >
                 {!menuOpen ? (
                     <GlobeAltIcon className="h-6 w-6" />
@@ -77,7 +87,7 @@ export const MapStyleMenu: FC<Props> = ({ handleStyleSelection }) => {
                                     styleOptions[key].style === style
                                         ? "bg-blue-400 text-white"
                                         : "bg-white",
-                                    "z-10 rounded-md w-24 p-2 my-1 mr-4 cursor-default text-md hover:bg-blue-400 hover:text-white hover:cursor-pointer"
+                                    "z-10 rounded-md w-24 p-2 my-1 mr-4 cursor-default text-md hover:bg-blue-400 hover:text-white hover:cursor-pointer shadow-lg"
                                 )}
                                 onClick={() => {
                                     setStyle(styleOptions[key].style);
