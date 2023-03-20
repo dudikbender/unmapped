@@ -81,7 +81,7 @@ export default function Home() {
                     starred: noteRead.starred ? true : false
                 };
             }
-            return { ...note, read: false, starred: false };
+            return { ...note, content: "", read: false, starred: false };
         });
         return visibleNotes;
     };
@@ -122,13 +122,13 @@ export default function Home() {
             );
             setSelectedNote(note);
             setNoteReadModalOpen(true);
+            const fullNote = await getFullNote(note.uuid);
+            if (fullNote) {
+                updateNoteInStore(fullNote);
+            }
             if (!existing) {
-                const fullNote = await getFullNote(note.uuid);
-                if (fullNote) {
-                    updateNoteInStore(fullNote);
-                    addNoteRead(noteReadData);
-                    addNoteReadToStore(noteReadData);
-                }
+                addNoteRead(noteReadData);
+                addNoteReadToStore(noteReadData);
             } else {
                 if (user?.id === note.user_id) {
                     return;
@@ -155,7 +155,7 @@ export default function Home() {
                     cutOffDate = mostRecentNote.created_at;
                 }
             }
-            const notesResponse = await getNotes(user?.id, "");
+            const notesResponse = await getNotes(user?.id, cutOffDate, 0, 100);
 
             if (!notesResponse) {
                 return;
@@ -173,7 +173,7 @@ export default function Home() {
                     ) === index
             );
 
-            setNotesInStore(uniqueNoteReads);
+            setNotesInStore(userNotes);
             notesRetrieved += userNotes.length;
             if (!count) {
                 return;

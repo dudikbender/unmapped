@@ -38,7 +38,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
         authorUserId: ""
     });
     const { user } = useUser();
-    const { updateNoteInStore } = useNoteStore();
+    const { notes, updateNoteInStore } = useNoteStore();
 
     const getAuthor = async () => {
         const author = await getUser(note?.user_id);
@@ -53,7 +53,11 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
         if (note) {
             getAuthor();
         }
-    }, [note]);
+        const noteInStore = notes.find((n: Note) => n.uuid === note?.uuid);
+        if (noteInStore) {
+            setNoteContent(noteInStore.content);
+        }
+    }, [note, notes]);
 
     useEffect(() => {
         setShowModal(show);
