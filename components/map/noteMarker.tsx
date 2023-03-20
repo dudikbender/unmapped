@@ -5,6 +5,7 @@ import {
     EnvelopeOpenIcon,
     PaperAirplaneIcon
 } from "@heroicons/react/24/outline";
+import { useNoteReadStore } from "@/services/stores/noteReadStore";
 
 type Props = {
     latitude: number;
@@ -26,13 +27,13 @@ export const NoteMarker: FC<Props> = ({
     currentUserIsAuthor
 }) => {
     const [canOpen, setCanOpen] = useState<boolean>(availableToOpen);
-    const [previouslyOpened, setPreviouslyOpened] =
+    /* const [previouslyOpened, setPreviouslyOpened] =
         useState<boolean>(alreadyOpened);
 
     useEffect(() => {
         setCanOpen(availableToOpen);
         setPreviouslyOpened(alreadyOpened);
-    }, [availableToOpen, alreadyOpened]);
+    }, [availableToOpen, alreadyOpened]); */
 
     return (
         <Marker
@@ -48,9 +49,9 @@ export const NoteMarker: FC<Props> = ({
                 className={classNames(
                     currentUserIsAuthor
                         ? "bg-purple-500"
-                        : previouslyOpened
+                        : alreadyOpened
                         ? "bg-green-600 ring-white"
-                        : canOpen
+                        : availableToOpen
                         ? "bg-blue-500"
                         : "bg-gray-500",
                     "text-white p-2 rounded-full hover:cursor-pointer shadow-lg ring-inset-1 ring-1 ring-gray-900"
@@ -58,9 +59,9 @@ export const NoteMarker: FC<Props> = ({
             >
                 {currentUserIsAuthor ? (
                     <PaperAirplaneIcon className="h-4 w-4" />
-                ) : previouslyOpened ? (
+                ) : alreadyOpened ? (
                     <EnvelopeOpenIcon className="h-4 w-4" />
-                ) : canOpen ? (
+                ) : availableToOpen ? (
                     <EnvelopeIcon className="h-4 w-4" />
                 ) : (
                     <EnvelopeIcon className="h-4 w-4" />

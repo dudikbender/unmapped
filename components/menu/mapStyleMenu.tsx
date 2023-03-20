@@ -51,7 +51,7 @@ export const MapStyleMenu: FC<Props> = ({
     handleStyleSelection
 }) => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [style, setStyle] = useState<MapStyle>(MapStyle.SATELLITE);
+    const [style, setStyle] = useState<MapStyle>(MapStyle.LIGHT);
 
     useEffect(() => {
         setMenuOpen(openMenu === "style" ? true : false);

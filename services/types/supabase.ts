@@ -42,7 +42,7 @@ export interface Database {
                 Row: {
                     created_at: string | null;
                     id: number;
-                    uuid: string;
+                    uuid?: string;
                     last_read: string | null;
                     note_id: string;
                     starred: boolean | null;

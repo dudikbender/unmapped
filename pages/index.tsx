@@ -41,7 +41,7 @@ export default function Home() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null);
     const [distanceToNote, setDistanceToNote] = useState<number>(0);
     const [currentZoom, setCurrentZoom] = useState<number>(0);
-    const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.SATELLITE);
+    const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.LIGHT);
     const [menuSelected, setMenuSelected] = useState<string | null>(null);
     const { notes, setNotesInStore, updateNoteInStore } = useNoteStore();
     const [visibleNotes, setVisibleNotes] = useState<Note[]>(notes);
@@ -116,10 +116,9 @@ export default function Home() {
         if (user?.id === note.user_id) {
             setSelectedNote(note);
             setNoteReadModalOpen(true);
-        } else if (
-            noteDistanceFromUser < proximityRadius ||
-            note.read === true
-        ) {
+            return;
+        }
+        if (noteDistanceFromUser < proximityRadius || note.read === true) {
             const existingRead = noteReads.find(
                 (noteRead: NoteRead) => noteRead?.note_id === note.uuid
             );
@@ -135,16 +134,19 @@ export default function Home() {
             if (!existingRead) {
                 const addResponse = await addNoteRead(noteReadData);
                 addNoteReadToStore(addResponse);
+                return;
             } else {
                 const updateResponse = await updateNoteRead(
                     existingRead.uuid,
                     currentTime
                 );
-                updateNoteReadInStore(noteReadData);
+                updateNoteReadInStore(updateResponse);
+                return;
             }
         } else {
             setDistanceToNote(noteDistanceFromUser);
             setBlockRead(true);
+            return;
         }
     };
 
