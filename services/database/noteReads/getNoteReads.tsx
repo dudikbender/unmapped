@@ -36,6 +36,5 @@ export const getNoteReads = async (
         console.log(error);
         return undefined;
     }
-    console.log(noteReads);
     return { userNoteReads: noteReads, count: count };
 };

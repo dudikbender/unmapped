@@ -1,5 +1,6 @@
 import { createClient, PostgrestError } from "@supabase/supabase-js";
 import { Database } from "@/services/types/supabase";
+import { BlockedConnection } from "@/services/types/blockedConnection";
 
 const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,7 +11,7 @@ export const addBlock = async (
     user_id: string,
     user_to_block: string,
     comment?: string
-): Promise<any | PostgrestError | null> => {
+): Promise<BlockedConnection | PostgrestError | null> => {
     const blockData = {
         user_id: user_id,
         blocked_user_id: user_to_block,
@@ -35,7 +36,7 @@ export const addBlock = async (
 export const unBlock = async (
     blockUUID: string,
     comment?: string
-): Promise<any | PostgrestError | null> => {
+): Promise<BlockedConnection | PostgrestError | null> => {
     type BlockData = {
         blocked: boolean;
         last_updated: string;
@@ -69,7 +70,7 @@ export const unBlock = async (
 export const reBlock = async (
     blockUUID: string,
     comment?: string
-): Promise<any | PostgrestError | null> => {
+): Promise<BlockedConnection | PostgrestError | null> => {
     type BlockData = {
         blocked: boolean;
         last_updated: string;

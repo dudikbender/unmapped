@@ -51,11 +51,5 @@ export const getNotes = async (
         console.log(error);
         return undefined;
     }
-    // Change content to empty string (for security)
-    userNotes.forEach((note) => {
-        if (note.user_id !== userId) {
-            note.content = "";
-        }
-    });
     return { userNotes: userNotes, count: count };
 };
