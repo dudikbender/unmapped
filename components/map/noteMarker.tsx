@@ -58,8 +58,10 @@ export const NoteMarker: FC<Props> = ({
             >
                 {currentUserIsAuthor ? (
                     <PaperAirplaneIcon className="h-4 w-4" />
-                ) : alreadyOpened ? (
+                ) : previouslyOpened ? (
                     <EnvelopeOpenIcon className="h-4 w-4" />
+                ) : canOpen ? (
+                    <EnvelopeIcon className="h-4 w-4" />
                 ) : (
                     <EnvelopeIcon className="h-4 w-4" />
                 )}

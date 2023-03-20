@@ -53,7 +53,9 @@ export const getNotes = async (
     }
     // Change content to empty string (for security)
     userNotes.forEach((note) => {
-        note.content = "";
+        if (note.user_id !== userId) {
+            note.content = "";
+        }
     });
     return { userNotes: userNotes, count: count };
 };

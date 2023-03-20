@@ -20,6 +20,7 @@ import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
 import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 import { MapStyle } from "@/services/types/mapObjects";
 import { addNoteRead } from "@/services/database/addNoteRead";
+import { v4 as uuidv4 } from "uuid";
 
 const proximityRadius = 0.2; // 0.2km
 
@@ -68,7 +69,7 @@ export default function Home() {
         const visibleNotes = notes.map((note: Note) => {
             // Check if note_uuid has been read by user and starred
             const noteRead = noteReads.find(
-                (noteRead: NoteRead) => noteRead.note_id === note.uuid
+                (noteRead: NoteRead) => noteRead?.note_id === note.uuid
             );
             if (note.user_id === user?.id) {
                 return { ...note, read: true, starred: false };
@@ -112,28 +113,33 @@ export default function Home() {
             last_read: new Date().toISOString(),
             starred: false
         };
-        if (
+        if (user?.id === note.user_id) {
+            setSelectedNote(note);
+            setNoteReadModalOpen(true);
+        } else if (
             noteDistanceFromUser < proximityRadius ||
-            user?.id === note.user_id ||
             note.read === true
         ) {
-            const existing = noteReads.find(
-                (noteRead: NoteRead) => noteRead.note_id === note.uuid
+            const existingRead = noteReads.find(
+                (noteRead: NoteRead) => noteRead?.note_id === note.uuid
             );
             setSelectedNote(note);
             setNoteReadModalOpen(true);
-            const fullNote = await getFullNote(note.uuid);
-            if (fullNote) {
-                updateNoteInStore(fullNote);
-            }
-            if (!existing) {
-                addNoteRead(noteReadData);
-                addNoteReadToStore(noteReadData);
-            } else {
-                if (user?.id === note.user_id) {
-                    return;
+            if (note.content === "") {
+                const fullNote = await getFullNote(note.uuid);
+                if (fullNote) {
+                    updateNoteInStore(fullNote);
                 }
-                updateNoteRead(existing.uuid);
+            }
+            const currentTime = new Date().toISOString();
+            if (!existingRead) {
+                const addResponse = await addNoteRead(noteReadData);
+                addNoteReadToStore(addResponse);
+            } else {
+                const updateResponse = await updateNoteRead(
+                    existingRead.uuid,
+                    currentTime
+                );
                 updateNoteReadInStore(noteReadData);
             }
         } else {
@@ -215,7 +221,12 @@ export default function Home() {
                     cutOffDate = mostRecentNoteRead.created_at;
                 }
             }
-            const notesResponse = await getNoteReads(user?.id, cutOffDate);
+            const notesResponse = await getNoteReads(
+                user?.id,
+                cutOffDate,
+                0,
+                100
+            );
             if (!notesResponse) {
                 return;
             }
@@ -231,10 +242,14 @@ export default function Home() {
                 (noteRead: NoteRead, index: number) =>
                     newNoteReadStore.findIndex(
                         (noteRead2: NoteRead) =>
-                            noteRead2.note_id === noteRead.note_id
+                            noteRead2?.note_id === noteRead?.note_id
                     ) === index
             );
-            setNoteReadsInStore(uniqueNoteReads);
+            if (uniqueNoteReads.length > 0) {
+                setNoteReadsInStore(uniqueNoteReads);
+            } else {
+                setNoteReadsInStore([]);
+            }
             noteReadsRetrieved += userNoteReads.length;
             if (!count) {
                 return;
@@ -243,7 +258,7 @@ export default function Home() {
                 const getMoreNotes = async () => {
                     const moreNotes = await getNoteReads(
                         user?.id,
-                        cutOffDate,
+                        "",
                         noteReadsRetrieved,
                         noteReadsRetrieved + 100
                     );
