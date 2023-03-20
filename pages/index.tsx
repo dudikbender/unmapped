@@ -173,7 +173,7 @@ export default function Home() {
                     ) === index
             );
 
-            setNotesInStore(userNotes);
+            setNotesInStore(uniqueNoteReads);
             notesRetrieved += userNotes.length;
             if (!count) {
                 return;
