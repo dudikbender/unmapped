@@ -10,7 +10,10 @@ const supabase = createClient<Database>(
 export const addNote = async (
     noteData: Note
 ): Promise<any | PostgrestError> => {
-    const { data: Note, error } = await supabase.from("Notes").insert(noteData);
+    const { data: Note, error } = await supabase
+        .from("Notes")
+        .insert(noteData)
+        .select("*");
     if (error) {
         console.log(error);
         return error;

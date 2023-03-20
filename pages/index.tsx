@@ -21,7 +21,7 @@ import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 import { MapStyle } from "@/services/types/mapObjects";
 import { addNoteRead } from "@/services/database/noteReads/addNoteRead";
 
-const proximityRadius = 0.2; // 0.2km
+const proximityRadius = 5; //0.2; // 0.2km
 
 export default function Home() {
     const { user } = useUser();
@@ -111,30 +111,35 @@ export default function Home() {
             return;
         }
         if (noteDistanceFromUser < proximityRadius || note.read === true) {
+            // Find note read with note_id matching note.uuid and to_user_id matching user.id
             const existingRead = noteReads.find(
-                (noteRead: NoteRead) => noteRead?.note_id === note.uuid
+                (noteRead: NoteRead) =>
+                    noteRead?.note_id === note.uuid &&
+                    noteRead?.user_id === note.to_user_id
             );
             setSelectedNote(note);
             setNoteReadModalOpen(true);
-            if (note.content === "") {
-                const fullNote = await getFullNote(note.uuid);
-                if (fullNote) {
-                    updateNoteInStore(fullNote);
-                }
-            }
             const currentTime = new Date().toISOString();
+            const updatedNoteWithRead = {
+                ...note,
+                read: true,
+                last_read: currentTime
+            };
             if (!existingRead) {
                 const addResponse = await addNoteRead(noteReadData);
+                updateNoteInStore(updatedNoteWithRead);
+                console.log("addResponse", addResponse);
                 addNoteReadToStore(addResponse);
                 return;
-            } else {
-                const updateResponse = await updateNoteRead(
-                    existingRead.uuid,
-                    currentTime
-                );
-                updateNoteReadInStore(updateResponse);
-                return;
             }
+            const updateResponse = await updateNoteRead(
+                existingRead.uuid,
+                currentTime
+            );
+            console.log("updatedResponse", updateResponse);
+            updateNoteInStore(updatedNoteWithRead);
+            updateNoteReadInStore(updateResponse);
+            return;
         } else {
             setDistanceToNote(noteDistanceFromUser);
             setBlockRead(true);
@@ -227,8 +232,6 @@ export default function Home() {
         setNotesLoading(false);
     }, [noteReadsLoading]);
 
-    console.log("Note Reads", noteReads);
-
     // Get note reads from database for this user, iterating through them and add them to the note read store
     useEffect(() => {
         setNoteReadsLoading(true);
@@ -304,14 +307,7 @@ export default function Home() {
                 return notesReadRetrievedData;
             };
             const data = await getNoteReadsFromDatabase();
-            console.log("1", data);
-            if (data) {
-                console.log("Data", data);
-                setNoteReadsInStore(data ? data : []);
-            } else {
-                console.log("No data");
-                setNoteReadsInStore([]);
-            }
+            setNoteReadsInStore(data ? data : []);
             return data;
         };
         returnNoteReadsFromDB();
@@ -390,11 +386,12 @@ export default function Home() {
                             }}
                         >
                             <NoteMarker
-                                key={note.id}
-                                latitude={note.latitude}
-                                longitude={note.longitude}
-                                availableToOpen={noteDistance < proximityRadius}
-                                alreadyOpened={note.read ? true : false}
+                                note={note}
+                                withinProximity={
+                                    noteDistance < proximityRadius
+                                        ? true
+                                        : false
+                                }
                                 currentUserIsAuthor={note.user_id === user?.id}
                             />
                         </div>

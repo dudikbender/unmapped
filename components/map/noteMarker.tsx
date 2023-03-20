@@ -5,13 +5,12 @@ import {
     EnvelopeOpenIcon,
     PaperAirplaneIcon
 } from "@heroicons/react/24/outline";
-import { useNoteReadStore } from "@/services/stores/noteReadStore";
+import { useNoteStore } from "@/services/stores/noteStore";
+import { Note } from "@/services/types/note";
 
 type Props = {
-    latitude: number;
-    longitude: number;
-    availableToOpen: boolean;
-    alreadyOpened: boolean;
+    note: Note | null;
+    withinProximity: boolean;
     currentUserIsAuthor: boolean;
 };
 
@@ -20,16 +19,18 @@ function classNames(...classes: string[]) {
 }
 
 export const NoteMarker: FC<Props> = ({
-    latitude,
-    longitude,
-    availableToOpen,
-    alreadyOpened,
+    note,
+    withinProximity,
     currentUserIsAuthor
 }) => {
+    if (!note) {
+        return null;
+    }
+
     return (
         <Marker
-            latitude={latitude}
-            longitude={longitude}
+            latitude={note?.latitude}
+            longitude={note?.longitude}
             anchor="bottom"
             draggable={true}
             onDragEnd={(e) => {
@@ -37,12 +38,13 @@ export const NoteMarker: FC<Props> = ({
             }}
         >
             <div
+                key={note.uuid}
                 className={classNames(
                     currentUserIsAuthor
                         ? "bg-purple-500"
-                        : alreadyOpened
+                        : note?.read
                         ? "bg-green-600 ring-white"
-                        : availableToOpen
+                        : withinProximity
                         ? "bg-blue-500"
                         : "bg-gray-500",
                     "text-white p-2 rounded-full hover:cursor-pointer shadow-lg ring-inset-1 ring-1 ring-gray-900"
@@ -50,9 +52,9 @@ export const NoteMarker: FC<Props> = ({
             >
                 {currentUserIsAuthor ? (
                     <PaperAirplaneIcon className="h-4 w-4" />
-                ) : alreadyOpened ? (
+                ) : note?.read ? (
                     <EnvelopeOpenIcon className="h-4 w-4" />
-                ) : availableToOpen ? (
+                ) : withinProximity ? (
                     <EnvelopeIcon className="h-4 w-4" />
                 ) : (
                     <EnvelopeIcon className="h-4 w-4" />

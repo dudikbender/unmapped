@@ -22,6 +22,21 @@ export const getFullNote = async (
     return noteData;
 };
 
+export const getNoteContent = async (
+    noteUUID: string
+): Promise<{ content: string } | undefined> => {
+    const { data: noteData, error } = await supabase
+        .from("Notes")
+        .select("content")
+        .eq("uuid", noteUUID)
+        .single();
+    if (error) {
+        console.log(error);
+        return;
+    }
+    return noteData;
+};
+
 export const getNotes = async (
     userId: string | undefined,
     dateTimeCutOff: string | undefined = undefined,

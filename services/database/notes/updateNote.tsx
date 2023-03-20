@@ -16,7 +16,8 @@ export const updateNoteContent = async (
     const { data: UpdatedNote, error } = await supabase
         .from("Notes")
         .update({ content: newContent })
-        .eq("uuid", noteUUID);
+        .eq("uuid", noteUUID)
+        .select("*");
     if (error) {
         console.log(error);
         return error;
@@ -35,7 +36,8 @@ export const updateNoteCoordinates = async (
     const { data: UpdatedNote, error } = await supabase
         .from("Notes")
         .update({ latitude: newLatitude, longitude: newLongitude })
-        .eq("uuid", noteUUID);
+        .eq("uuid", noteUUID)
+        .select("*");
     if (error) {
         console.log(error);
         return error;

@@ -10,6 +10,10 @@ import {
     updateNoteContent,
     updateNoteCoordinates
 } from "@/services/database/notes/updateNote";
+import {
+    getFullNote,
+    getNoteContent
+} from "@/services/database/notes/getNotes";
 
 type Props = {
     show: boolean;
@@ -29,6 +33,7 @@ function classNames(...classes: string[]) {
 
 export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
     const [showModal, setShowModal] = useState<boolean>(show);
+    const [noteData, setNoteData] = useState<any | null>(note);
     const [noteContent, setNoteContent] = useState<string | undefined>(
         note?.content
     );
@@ -55,6 +60,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
         }
         const noteInStore = notes.find((n: Note) => n.uuid === note?.uuid);
         if (noteInStore) {
+            setNoteData(noteInStore);
             setNoteContent(noteInStore.content);
         }
     }, [note, notes]);
@@ -72,12 +78,46 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
         setNoteContent(note?.content);
     }, [showModal]);
 
+    // "Unlocks" the content if it has not been read before
+    useEffect(() => {
+        var content = noteContent;
+        if (content === "") {
+            console.log("Empty note");
+            const outerFunc = async () => {
+                if (!note?.uuid) {
+                    return;
+                }
+                const noteContentFromDB = await getNoteContent(note?.uuid);
+                console.log("noteContentFromDB: ", noteContentFromDB);
+                if (noteContentFromDB) {
+                    updateNoteInStore({
+                        ...note,
+                        content: noteContentFromDB?.content
+                    });
+                }
+                const noteContentToSet = noteContentFromDB?.content
+                    ? noteContentFromDB?.content
+                    : "";
+                // Set noteData content property to fullNote content
+                setNoteData({
+                    ...noteData,
+                    content: noteContentToSet
+                });
+                return;
+            };
+            outerFunc();
+        }
+    }, [showModal]);
+
+    useEffect(() => {
+        if (noteData?.content) {
+            setNoteContent(noteData?.content);
+        }
+    }, [noteData]);
+
     const handleUpdateContent = async () => {
         try {
-            const updatedNote = await updateNoteContent(
-                noteContent,
-                note?.uuid
-            );
+            await updateNoteContent(noteContent, note?.uuid);
             updateNoteInStore({
                 uuid: note?.uuid,
                 latitude: note?.latitude,
@@ -149,20 +189,20 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                         htmlFor="about"
                                                         className="block text-sm font-medium text-gray-700"
                                                     >
-                                                        {note?.latitude} ,{" "}
-                                                        {note?.longitude}
+                                                        {noteData?.latitude} ,{" "}
+                                                        {noteData?.longitude}
                                                     </label>
                                                     <div className="mt-4">
                                                         <textarea
                                                             id="note-content"
                                                             name="note-content"
                                                             disabled={
-                                                                note?.user_id !==
+                                                                noteData?.user_id !==
                                                                 user?.id
                                                             }
                                                             rows={4}
                                                             className={classNames(
-                                                                note?.user_id ===
+                                                                noteData?.user_id ===
                                                                     user?.id
                                                                     ? "border-blue-400"
                                                                     : "border-blue-200",
@@ -225,7 +265,7 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                                                                     noteContent?.length ===
                                                                         0 ||
                                                                     noteContent ===
-                                                                        note?.content
+                                                                        noteData?.content
                                                                 }
                                                             >
                                                                 Update note

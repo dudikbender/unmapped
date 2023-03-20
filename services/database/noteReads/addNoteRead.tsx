@@ -9,13 +9,18 @@ const supabase = createClient<Database>(
 
 export const addNoteRead = async (
     noteReadData: NoteRead
-): Promise<any | PostgrestError> => {
+): Promise<any | PostgrestError | null> => {
+    console.log("Initial Data: ", noteReadData);
     const { data: NoteRead, error } = await supabase
         .from("NoteReads")
-        .insert(noteReadData);
+        .insert(noteReadData)
+        .select("*");
     if (error) {
         console.log(error);
         return error;
+    }
+    if (!NoteRead) {
+        return null;
     }
     return NoteRead;
 };

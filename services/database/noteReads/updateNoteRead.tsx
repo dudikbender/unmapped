@@ -11,16 +11,16 @@ export const updateNoteRead = async (
     noteReadUUID: string,
     lastRead: string | undefined = new Date().toISOString(),
     starred: boolean | undefined = false
-): Promise<NoteRead | PostgrestError | null> => {
+): Promise<any | PostgrestError | null> => {
     if (noteReadUUID === undefined) {
         return null;
     }
     const { data: UpdatedNoteRead, error } = await supabase
         .from("NoteReads")
         .update({ last_read: lastRead, starred: starred })
-        .eq("uuid", noteReadUUID);
+        .eq("uuid", noteReadUUID)
+        .select("*");
     if (error) {
-        console.log(error);
         return error;
     }
     return UpdatedNoteRead;
