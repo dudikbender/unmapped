@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState, useEffect } from "react";
 import { Marker } from "react-map-gl";
 import {
     EnvelopeIcon,
@@ -25,6 +25,14 @@ export const NoteMarker: FC<Props> = ({
     alreadyOpened,
     currentUserIsAuthor
 }) => {
+    const [canOpen, setCanOpen] = useState<boolean>(availableToOpen);
+    const [previouslyOpened, setPreviouslyOpened] =
+        useState<boolean>(alreadyOpened);
+
+    useEffect(() => {
+        setCanOpen(availableToOpen);
+        setPreviouslyOpened(alreadyOpened);
+    }, [availableToOpen, alreadyOpened]);
     return (
         <Marker
             latitude={latitude}
@@ -39,10 +47,10 @@ export const NoteMarker: FC<Props> = ({
                 className={classNames(
                     currentUserIsAuthor
                         ? "bg-purple-500"
-                        : availableToOpen
-                        ? "bg-blue-500"
                         : alreadyOpened
                         ? "bg-green-600 ring-white"
+                        : availableToOpen
+                        ? "bg-blue-500"
                         : "bg-gray-500",
                     "text-white p-2 rounded-full hover:cursor-pointer shadow-lg ring-inset-1 ring-1 ring-gray-900"
                 )}

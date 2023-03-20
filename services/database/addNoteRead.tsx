@@ -7,7 +7,7 @@ const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-export const addNote = async (
+export const addNoteRead = async (
     noteReadData: NoteRead
 ): Promise<any | PostgrestError> => {
     const { data: NoteRead, error } = await supabase

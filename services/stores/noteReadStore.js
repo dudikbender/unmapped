@@ -13,7 +13,7 @@ export const useNoteReadStore = create(
             updateNoteReadInStore: (noteRead) => {
                 set((state) => ({
                     noteReads: state.noteReads.map((n) =>
-                        n.uuid === noteRead.uuid ? noteRead : n
+                        n.note_id === noteRead.note_id ? noteRead : n
                     )
                 }));
             },
