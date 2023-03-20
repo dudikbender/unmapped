@@ -43,6 +43,8 @@ export default function Home() {
     const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.SATELLITE);
     const [menuSelected, setMenuSelected] = useState<string | null>(null);
     const { notes, setNotesInStore } = useNoteStore();
+    const [visibleNotes, setVisibleNotes] = useState<Note[]>(notes);
+
     const {
         noteReads,
         setNoteReadsInStore,
@@ -81,7 +83,6 @@ export default function Home() {
             }
             return { ...note, read: false, starred: false };
         });
-        console.log("Visible: ", visibleNotes);
         return visibleNotes;
     };
 
@@ -97,13 +98,10 @@ export default function Home() {
         }
     };
 
-    console.log("Reads: ", noteReads);
-
     const handleNoteClick = (note: Note, noteDistanceFromUser: number) => {
         if (!note.uuid) {
             return;
         }
-        console.log("Selected Note: ", note);
         const noteReadData: NoteRead = {
             note_id: note.uuid ? note.uuid : "",
             user_id: note.to_user_id ? note.to_user_id : "",
@@ -119,15 +117,12 @@ export default function Home() {
             const existing = noteReads.find(
                 (noteRead: NoteRead) => noteRead.note_id === note.uuid
             );
-            console.log("Existing: ", existing);
             setSelectedNote(note);
             setNoteReadModalOpen(true);
             if (!existing) {
-                console.log("Not read, adding to database");
                 addNoteRead(noteReadData);
                 addNoteReadToStore(noteReadData);
             } else {
-                console.log("Existing note read: ", existing);
                 updateNoteRead(existing.uuid);
                 updateNoteReadInStore(noteReadData);
             }
@@ -175,12 +170,8 @@ export default function Home() {
 
     // Get note reads from database for this user, iterating through them and add them to the note read store
     useEffect(() => {
-        if (noteReads.length === 0) {
-            return;
-        }
         const getNoteReadsFromDatabase = async () => {
-            const notesResponse = await getNoteReads(user?.id);
-            console.log("Reads in DV: ", notesResponse);
+            const notesResponse = await getNoteReads(user?.id, "");
             if (!notesResponse) {
                 return;
             }
@@ -195,6 +186,7 @@ export default function Home() {
                 const getMoreNotes = async () => {
                     const moreNotes = await getNoteReads(
                         user?.id,
+                        "",
                         noteReadsRetrieved,
                         noteReadsRetrieved + 100
                     );
@@ -218,8 +210,8 @@ export default function Home() {
             return;
         }
         const updatedWithVisibility = updateVisibleNotes();
-        setNotesInStore(updatedWithVisibility);
-    }, [noteReads]);
+        setVisibleNotes(updatedWithVisibility);
+    }, [notes, noteReads]);
 
     useEffect(() => {
         if (noteReadModalOpen) {
@@ -273,7 +265,7 @@ export default function Home() {
                         handleStyleSelection={(e) => setMapStyle(e)}
                     />
                 </div>
-                {notes.map((note: Note) => {
+                {visibleNotes.map((note: Note) => {
                     const noteDistance = haversine(
                         userLatLng.lat,
                         userLatLng.lng,

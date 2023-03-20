@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { Database } from "@/services/types/supabase";
-import { Note, NoteRead } from "../types/note";
+import { NoteRead } from "../types/note";
 
 const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,6 +9,7 @@ const supabase = createClient<Database>(
 
 export const getNoteReads = async (
     userId: string | undefined,
+    dateTimeCutOff: string | undefined,
     rangeStart: number = 0,
     rangeEnd: number = 100
 ): Promise<{ userNoteReads: NoteRead[]; count: number | null } | undefined> => {
@@ -24,6 +25,7 @@ export const getNoteReads = async (
         .select("*", { count: "exact" })
         .range(rangeStart, rangeEnd)
         .eq("user_id", userId)
+        .gte("last_read", dateTimeCutOff)
         .order("created_at", { ascending: false });
     if (error) {
         console.log(error);
