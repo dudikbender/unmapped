@@ -88,7 +88,6 @@ export const ReadNoteModal: FC<Props> = ({ show, note, handleClose }) => {
                     return;
                 }
                 const noteContentFromDB = await getNoteContent(note?.uuid);
-                console.log("noteContentFromDB: ", noteContentFromDB);
                 if (noteContentFromDB) {
                     updateNoteInStore({
                         ...note,

@@ -127,19 +127,20 @@ export default function Home() {
             };
             if (!existingRead) {
                 const addResponse = await addNoteRead(noteReadData);
+                if (addResponse) {
+                    updateNoteInStore(updatedNoteWithRead);
+                    addNoteReadToStore(addResponse);
+                }
+                return;
+            } else if (existingRead) {
+                const updateResponse = await updateNoteRead(
+                    existingRead.uuid,
+                    currentTime
+                );
                 updateNoteInStore(updatedNoteWithRead);
-                console.log("addResponse", addResponse);
-                addNoteReadToStore(addResponse);
+                updateNoteReadInStore(updateResponse);
                 return;
             }
-            const updateResponse = await updateNoteRead(
-                existingRead.uuid,
-                currentTime
-            );
-            console.log("updatedResponse", updateResponse);
-            updateNoteInStore(updatedNoteWithRead);
-            updateNoteReadInStore(updateResponse);
-            return;
         } else {
             setDistanceToNote(noteDistanceFromUser);
             setBlockRead(true);
@@ -168,12 +169,7 @@ export default function Home() {
                         cutOffDate = mostRecentNote.created_at;
                     }
                 }
-                const notesResponse = await getNotes(
-                    user?.id,
-                    cutOffDate,
-                    0,
-                    100
-                );
+                const notesResponse = await getNotes(user?.id, "", 0, 100);
 
                 if (!notesResponse) {
                     return;
@@ -181,13 +177,12 @@ export default function Home() {
                 const { userNotes, count } = notesResponse;
                 let notesRetrieved = 0;
                 const currentNoteStore = notes ? notes : [];
-                const newNoteStore = [...currentNoteStore, ...userNotes];
+                const newNoteStore = [...userNotes]; //[...currentNoteStore, ...userNotes];
                 // Remove duplicates
                 const uniqueNotes = newNoteStore.filter(
-                    (noteRead: NoteRead, index: number) =>
+                    (note: Note, index: number) =>
                         newNoteStore.findIndex(
-                            (noteRead2: NoteRead) =>
-                                noteRead2.uuid === noteRead.uuid
+                            (note2: Note) => note2.uuid === note.uuid
                         ) === index
                 );
 
@@ -250,22 +245,14 @@ export default function Home() {
                         cutOffDate = mostRecentNoteRead.created_at;
                     }
                 }
-                const notesResponse = await getNoteReads(
-                    user?.id,
-                    cutOffDate,
-                    0,
-                    100
-                );
+                const notesResponse = await getNoteReads(user?.id, "", 0, 100);
                 if (!notesResponse) {
                     return;
                 }
                 const { userNoteReads, count } = notesResponse;
                 let noteReadsRetrieved = 0;
-                const currentNoteReadStore = noteReads ? noteReads : [];
-                const newNoteReadStore = [
-                    ...currentNoteReadStore,
-                    ...userNoteReads
-                ];
+                //const currentNoteReadStore = noteReads ? noteReads : [];
+                const newNoteReadStore = [...userNoteReads]; // [...currentNoteReadStore, ...userNoteReads];
                 // Remove duplicates
                 const uniqueNoteReads = newNoteReadStore.filter(
                     (noteRead: NoteRead, index: number) =>
@@ -382,6 +369,7 @@ export default function Home() {
                         <div
                             key={note.uuid}
                             onClick={() => {
+                                console.log("Note clicked", note);
                                 handleNoteClick(note, noteDistance);
                             }}
                         >

@@ -8,7 +8,7 @@ export const useNoteReadStore = create(
             setNoteReadsInStore: (noteReads) => set({ noteReads }),
             addNoteReadToStore: (noteRead) =>
                 set((state) => ({
-                    noteReads: [...state.noteReads, noteRead]
+                    noteReads: [...state.noteReads, ...noteRead]
                 })),
             updateNoteReadInStore: (noteRead) => {
                 set((state) => ({

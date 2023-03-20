@@ -22,5 +22,6 @@ export const addNoteRead = async (
     if (!NoteRead) {
         return null;
     }
+    console.log("Backed Data: ", NoteRead);
     return NoteRead;
 };

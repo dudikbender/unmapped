@@ -1,4 +1,5 @@
 import { FC, useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
 import { Marker } from "react-map-gl";
 import {
     EnvelopeIcon,
@@ -6,7 +7,8 @@ import {
     PaperAirplaneIcon
 } from "@heroicons/react/24/outline";
 import { useNoteStore } from "@/services/stores/noteStore";
-import { Note } from "@/services/types/note";
+import { useNoteReadStore } from "@/services/stores/noteReadStore";
+import { Note, NoteRead } from "@/services/types/note";
 
 type Props = {
     note: Note | null;
@@ -23,7 +25,14 @@ export const NoteMarker: FC<Props> = ({
     withinProximity,
     currentUserIsAuthor
 }) => {
-    if (!note) {
+    const { noteReads } = useNoteReadStore();
+    const { user } = useUser();
+    // Const to check if the note uuid and user id is in the noteReads array
+    const noteRead = noteReads.find(
+        (noteRead: NoteRead) =>
+            noteRead?.note_id === note?.uuid && noteRead.user_id === user?.id
+    );
+    if (!note || !note || !note?.latitude || !note?.longitude) {
         return null;
     }
 
@@ -42,7 +51,7 @@ export const NoteMarker: FC<Props> = ({
                 className={classNames(
                     currentUserIsAuthor
                         ? "bg-purple-500"
-                        : note?.read
+                        : noteRead
                         ? "bg-green-600 ring-white"
                         : withinProximity
                         ? "bg-blue-500"
@@ -52,7 +61,7 @@ export const NoteMarker: FC<Props> = ({
             >
                 {currentUserIsAuthor ? (
                     <PaperAirplaneIcon className="h-4 w-4" />
-                ) : note?.read ? (
+                ) : noteRead ? (
                     <EnvelopeOpenIcon className="h-4 w-4" />
                 ) : withinProximity ? (
                     <EnvelopeIcon className="h-4 w-4" />

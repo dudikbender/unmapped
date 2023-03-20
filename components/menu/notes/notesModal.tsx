@@ -7,6 +7,7 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { UserConnection } from "@/services/types/connections";
 import { useMap } from "react-map-gl";
 import { ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { NoteList } from "./notesList";
 
 type Props = {
     show: boolean;
@@ -78,42 +79,12 @@ export function NotesList({ show, handleClose }: Props) {
                                     >
                                         {`Your Received Notes`}
                                     </Dialog.Title>
-                                    <ul className="sm:divide-y sm:divide-blue-100">
-                                        {receivedNotes.map((note: Note) => (
-                                            <div
-                                                key={note.uuid}
-                                                className="py-1 cursor-default"
-                                            >
-                                                <li>
-                                                    {note.read
-                                                        ? note.content
-                                                        : "Still unopened..."}
-                                                    {` `}
-                                                    <span className="italic">
-                                                        from{" "}
-                                                        {
-                                                            connections.filter(
-                                                                (
-                                                                    connection: UserConnection
-                                                                ) =>
-                                                                    connection.userId ===
-                                                                    note.user_id
-                                                            )[0]?.fullName
-                                                        }
-                                                    </span>
-                                                    <ArrowRightCircleIcon
-                                                        className="h-5 w-5 inline-block ml-2 text-blue-400 hover:text-blue-500 hover:cursor-pointer"
-                                                        onClick={() =>
-                                                            flyToNoteLocation({
-                                                                lat: note.latitude,
-                                                                lng: note.longitude
-                                                            })
-                                                        }
-                                                    />
-                                                </li>
-                                            </div>
-                                        ))}
-                                    </ul>
+                                    <NoteList
+                                        notes={receivedNotes}
+                                        connections={connections}
+                                        mapObject={baseMap}
+                                        handleClose={handleClose}
+                                    />
                                 </div>
                                 <div className="border-t-2 border-blue-400 my-4" />
                                 <div>
@@ -130,20 +101,7 @@ export function NotesList({ show, handleClose }: Props) {
                                                 className="py-1 cursor-default"
                                             >
                                                 <li>
-                                                    {note.content}
-                                                    {` `}
-                                                    <span className="italic">
-                                                        to{" "}
-                                                        {
-                                                            connections.filter(
-                                                                (
-                                                                    connection: UserConnection
-                                                                ) =>
-                                                                    connection.userId ===
-                                                                    note.to_user_id
-                                                            )[0]?.fullName
-                                                        }
-                                                    </span>
+                                                    {/* {note?.content} */}
                                                     <ArrowRightCircleIcon
                                                         className="h-5 w-5 inline-block ml-2 text-blue-400 hover:text-blue-500 hover:cursor-pointer"
                                                         onClick={() =>
