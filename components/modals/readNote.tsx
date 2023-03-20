@@ -9,7 +9,7 @@ import { getUser } from "@/services/users/getUser";
 import {
     updateNoteContent,
     updateNoteCoordinates
-} from "@/services/database/updateNote";
+} from "@/services/database/notes/updateNote";
 
 type Props = {
     show: boolean;

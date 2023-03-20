@@ -3,7 +3,7 @@ import { useUser } from "@clerk/nextjs";
 import { Transition, Dialog } from "@headlessui/react";
 import { v4 as uuidv4 } from "uuid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { addNote } from "@/services/database/addNote";
+import { addNote } from "@/services/database/notes/addNote";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { ConnectionsLookup } from "./connectionsLookup";
 

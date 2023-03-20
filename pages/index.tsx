@@ -11,16 +11,15 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { useNoteReadStore } from "@/services/stores/noteReadStore";
 import { Note, NoteRead } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
-import { getFullNote, getNotes } from "@/services/database/getNotes";
-import { getNoteReads } from "@/services/database/getNoteReads";
-import { updateNoteRead } from "@/services/database/updateNoteRead";
+import { getFullNote, getNotes } from "@/services/database/notes/getNotes";
+import { getNoteReads } from "@/services/database/noteReads/getNoteReads";
+import { updateNoteRead } from "@/services/database/noteReads/updateNoteRead";
 import { getUserConnections } from "@/services/users/getUserConnections";
 import { haversine } from "@/services/geo/haversine";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
 import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 import { MapStyle } from "@/services/types/mapObjects";
-import { addNoteRead } from "@/services/database/addNoteRead";
-import { v4 as uuidv4 } from "uuid";
+import { addNoteRead } from "@/services/database/noteReads/addNoteRead";
 
 const proximityRadius = 0.2; // 0.2km
 
@@ -54,16 +53,6 @@ export default function Home() {
     } = useNoteReadStore();
     const { setConnectionsInStore } = useConnectionStore();
 
-    useEffect(() => {
-        const getUserConnectionsFromDatabase = async () => {
-            const connections = await getUserConnections(user?.id);
-            if (connections) {
-                setConnectionsInStore(connections);
-            }
-        };
-        getUserConnectionsFromDatabase();
-    }, []);
-
     // Filter notes to only show those where user_id matches user.id or to_user_id matches user.id
     const updateVisibleNotes = () => {
         const visibleNotes = notes.map((note: Note) => {
@@ -87,6 +76,7 @@ export default function Home() {
         return visibleNotes;
     };
 
+    // Handles selection of a point on the map, with various outcomes depending on the zoom level
     const handleSelectedPoint = (point: { lat: number; lng: number }) => {
         if (!blockRead && currentZoom > 13) {
             setSelectedPoint(point);
@@ -99,6 +89,7 @@ export default function Home() {
         }
     };
 
+    // Handle click on a note, with various outcomes depending on the note's read status
     const handleNoteClick = async (
         note: Note,
         noteDistanceFromUser: number
@@ -282,6 +273,7 @@ export default function Home() {
         getNoteReadsFromDatabase();
     }, []);
 
+    // Update the visible notes when the notes or note reads change
     useEffect(() => {
         if (noteReads.length === 0) {
             return;
@@ -290,11 +282,16 @@ export default function Home() {
         setVisibleNotes(updatedWithVisibility);
     }, [notes, noteReads]);
 
+    // Get user's connections from the database and add them to the store
     useEffect(() => {
-        if (noteReadModalOpen) {
-            setNoteCreateModalOpen(false);
-        }
-    }, [noteReadModalOpen]);
+        const getUserConnectionsFromDatabase = async () => {
+            const connections = await getUserConnections(user?.id);
+            if (connections) {
+                setConnectionsInStore(connections);
+            }
+        };
+        getUserConnectionsFromDatabase();
+    }, []);
 
     return (
         <div className="relative h-[100%] w-[100%]">

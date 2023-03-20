@@ -26,15 +26,6 @@ export const NoteMarker: FC<Props> = ({
     alreadyOpened,
     currentUserIsAuthor
 }) => {
-    const [canOpen, setCanOpen] = useState<boolean>(availableToOpen);
-    /* const [previouslyOpened, setPreviouslyOpened] =
-        useState<boolean>(alreadyOpened);
-
-    useEffect(() => {
-        setCanOpen(availableToOpen);
-        setPreviouslyOpened(alreadyOpened);
-    }, [availableToOpen, alreadyOpened]); */
-
     return (
         <Marker
             latitude={latitude}
@@ -42,7 +33,7 @@ export const NoteMarker: FC<Props> = ({
             anchor="bottom"
             draggable={true}
             onDragEnd={(e) => {
-                console.log(e.lngLat);
+                console.log("New Location: ", e.lngLat);
             }}
         >
             <div

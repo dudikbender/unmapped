@@ -1,4 +1,4 @@
-import { getConnections } from "../database/getConnections";
+import { getConnections } from "../database/connections/getConnections";
 import { getUserList } from "@/services/users/getUser";
 import { UserConnection } from "../types/connections";
 import { User } from "../types/user";
@@ -13,6 +13,7 @@ export const getUserConnections = async (
     if (connections === null) {
         return;
     }
+
     const connectionList = connections.map((connection: any) => {
         const connectionData = {
             id: connection.id,
