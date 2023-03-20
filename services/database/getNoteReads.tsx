@@ -16,6 +16,11 @@ export const getNoteReads = async (
     if (!userId) {
         return;
     }
+    // Convert the dateTimeCutoff to a Date object, default to Jan 1, 2023
+    let afterDate = new Date("2023-01-01").toISOString();
+    if (dateTimeCutOff) {
+        afterDate = dateTimeCutOff;
+    }
     const {
         data: noteReads,
         count,
@@ -25,7 +30,7 @@ export const getNoteReads = async (
         .select("*", { count: "exact" })
         .range(rangeStart, rangeEnd)
         .eq("user_id", userId)
-        .gte("last_read", dateTimeCutOff)
+        .gte("created_at", afterDate)
         .order("created_at", { ascending: false });
     if (error) {
         console.log(error);

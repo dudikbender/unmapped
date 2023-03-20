@@ -11,7 +11,7 @@ import { useConnectionStore } from "@/services/stores/connectionStore";
 import { useNoteReadStore } from "@/services/stores/noteReadStore";
 import { Note, NoteRead } from "@/services/types/note";
 import { LatLng } from "@/services/types/latlng";
-import { getNotes } from "@/services/database/getNotes";
+import { getFullNote, getNotes } from "@/services/database/getNotes";
 import { getNoteReads } from "@/services/database/getNoteReads";
 import { updateNoteRead } from "@/services/database/updateNoteRead";
 import { getUserConnections } from "@/services/users/getUserConnections";
@@ -42,7 +42,7 @@ export default function Home() {
     const [currentZoom, setCurrentZoom] = useState<number>(0);
     const [mapStyle, setMapStyle] = useState<MapStyle>(MapStyle.SATELLITE);
     const [menuSelected, setMenuSelected] = useState<string | null>(null);
-    const { notes, setNotesInStore } = useNoteStore();
+    const { notes, setNotesInStore, updateNoteInStore } = useNoteStore();
     const [visibleNotes, setVisibleNotes] = useState<Note[]>(notes);
 
     const {
@@ -98,7 +98,10 @@ export default function Home() {
         }
     };
 
-    const handleNoteClick = (note: Note, noteDistanceFromUser: number) => {
+    const handleNoteClick = async (
+        note: Note,
+        noteDistanceFromUser: number
+    ) => {
         if (!note.uuid) {
             return;
         }
@@ -120,9 +123,16 @@ export default function Home() {
             setSelectedNote(note);
             setNoteReadModalOpen(true);
             if (!existing) {
-                addNoteRead(noteReadData);
-                addNoteReadToStore(noteReadData);
+                const fullNote = await getFullNote(note.uuid);
+                if (fullNote) {
+                    updateNoteInStore(fullNote);
+                    addNoteRead(noteReadData);
+                    addNoteReadToStore(noteReadData);
+                }
             } else {
+                if (user?.id === note.user_id) {
+                    return;
+                }
                 updateNoteRead(existing.uuid);
                 updateNoteReadInStore(noteReadData);
             }
@@ -135,13 +145,35 @@ export default function Home() {
     // Get notes from database for this user, iterating through them and add them to the note store
     useEffect(() => {
         const getNotesFromDatabase = async () => {
-            const notesResponse = await getNotes(user?.id);
+            // Find the date of the most recent last_read note
+            let cutOffDate = "";
+            if (notes.length > 0) {
+                const mostRecentNote = notes.reduce((prev: any, current: any) =>
+                    prev?.created_at > current?.created_at ? prev : current
+                );
+                if (mostRecentNote) {
+                    cutOffDate = mostRecentNote.created_at;
+                }
+            }
+            const notesResponse = await getNotes(user?.id, "");
+
             if (!notesResponse) {
                 return;
             }
             const { userNotes, count } = notesResponse;
             let notesRetrieved = 0;
-            setNotesInStore(userNotes);
+            const currentNoteStore = notes ? notes : [];
+            const newNoteStore = [...currentNoteStore, ...userNotes];
+            // Remove duplicates
+            const uniqueNoteReads = newNoteStore.filter(
+                (noteRead: NoteRead, index: number) =>
+                    newNoteStore.findIndex(
+                        (noteRead2: NoteRead) =>
+                            noteRead2.uuid === noteRead.uuid
+                    ) === index
+            );
+
+            setNotesInStore(uniqueNoteReads);
             notesRetrieved += userNotes.length;
             if (!count) {
                 return;
@@ -150,6 +182,7 @@ export default function Home() {
                 const getMoreNotes = async () => {
                     const moreNotes = await getNotes(
                         user?.id,
+                        cutOffDate,
                         notesRetrieved,
                         notesRetrieved + 100
                     );
@@ -171,13 +204,37 @@ export default function Home() {
     // Get note reads from database for this user, iterating through them and add them to the note read store
     useEffect(() => {
         const getNoteReadsFromDatabase = async () => {
-            const notesResponse = await getNoteReads(user?.id, "");
+            // Find the date of the most recent last_read note
+            let cutOffDate = "";
+            if (noteReads.length > 0) {
+                const mostRecentNoteRead = noteReads.reduce(
+                    (prev: any, current: any) =>
+                        prev?.created_at > current?.created_at ? prev : current
+                );
+                if (mostRecentNoteRead) {
+                    cutOffDate = mostRecentNoteRead.created_at;
+                }
+            }
+            const notesResponse = await getNoteReads(user?.id, cutOffDate);
             if (!notesResponse) {
                 return;
             }
             const { userNoteReads, count } = notesResponse;
             let noteReadsRetrieved = 0;
-            setNoteReadsInStore(userNoteReads);
+            const currentNoteReadStore = noteReads ? noteReads : [];
+            const newNoteReadStore = [
+                ...currentNoteReadStore,
+                ...userNoteReads
+            ];
+            // Remove duplicates
+            const uniqueNoteReads = newNoteReadStore.filter(
+                (noteRead: NoteRead, index: number) =>
+                    newNoteReadStore.findIndex(
+                        (noteRead2: NoteRead) =>
+                            noteRead2.note_id === noteRead.note_id
+                    ) === index
+            );
+            setNoteReadsInStore(uniqueNoteReads);
             noteReadsRetrieved += userNoteReads.length;
             if (!count) {
                 return;
@@ -186,14 +243,17 @@ export default function Home() {
                 const getMoreNotes = async () => {
                     const moreNotes = await getNoteReads(
                         user?.id,
-                        "",
+                        cutOffDate,
                         noteReadsRetrieved,
                         noteReadsRetrieved + 100
                     );
                     if (!moreNotes) {
                         return;
                     }
-                    setNoteReadsInStore([...notes, ...moreNotes.userNoteReads]);
+                    setNoteReadsInStore([
+                        ...noteReads,
+                        ...moreNotes.userNoteReads
+                    ]);
                     noteReadsRetrieved += moreNotes.userNoteReads.length;
                     if (noteReadsRetrieved < count) {
                         getMoreNotes();
