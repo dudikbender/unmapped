@@ -1,11 +1,11 @@
 export type DatabaseConnection = {
-    id?: number;
-    uuid: string;
-    requester_user: string;
+    accepted: boolean | null;
+    accepted_date: string | null;
+    created_at: string | null;
+    id: number;
     requested_user: string;
-    accepted?: boolean | null;
-    accepted_date?: string | null;
-    created_at?: string | null;
+    requester_user: string;
+    uuid: string;
 };
 
 export type UserConnection = {

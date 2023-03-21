@@ -1,4 +1,5 @@
 import { useState, useEffect, FC } from "react";
+import { useUser } from "@clerk/nextjs";
 import { User } from "@/services/types/user";
 import { searchUsers } from "@/services/users/searchUsers";
 import Image from "next/image";
@@ -14,10 +15,16 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
     const [selectedUser, setSelectedUser] = useState<User | undefined>(
         undefined
     );
+    const { user: currentUser } = useUser();
+    console.log(currentUser);
+    console.log(searchResults);
     const listResults = async () => {
         setSearching(true);
         const response = await searchUsers(searchTerm);
-        setSearchResults(response);
+        const filteredResults = response.filter(
+            (user: User) => user.uuid !== currentUser?.id
+        );
+        setSearchResults(filteredResults);
         setSearching(false);
     };
     useEffect(() => {
@@ -31,7 +38,6 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
 
     useEffect(() => {
         if (selectedUser) {
-            console.log("selectedUser", selectedUser);
             handleSelection(selectedUser);
         }
     }, [selectedUser]);
@@ -60,11 +66,8 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
                             {searchResults.map((user) => (
                                 <div
                                     key={user.uuid}
-                                    className="flex p-2 cursor-pointer items-center rounded-md 
-                                            hover:bg-blue-400 hover:text-white hover:ring-1 hover:ring-blue-500 hover:ring-opacity-50"
-                                    onClick={() => {
-                                        setSelectedUser(user);
-                                    }}
+                                    className="flex p-2 cursor-pointer items-center rounded-md hover:bg-blue-400 hover:text-white hover:ring-1 hover:ring-blue-500 hover:ring-opacity-50"
+                                    onClick={() => setSelectedUser(user)}
                                 >
                                     <div className="relative h-[30px] w-[30px]">
                                         <Image

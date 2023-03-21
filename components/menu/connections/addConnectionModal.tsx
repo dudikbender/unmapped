@@ -1,8 +1,17 @@
-import { Fragment } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { XMarkIcon, ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { User } from "@/services/types/user";
+import { useUser } from "@clerk/nextjs";
+import { useConnectionStore } from "@/services/stores/connectionStore";
+import { UserConnection } from "@/services/types/connections";
+import {
+    addConnection,
+    acceptConnection,
+    blockConnection,
+    deleteConnection
+} from "@/services/database/connections/actions";
 
 type Props = {
     show: boolean;
@@ -10,7 +19,80 @@ type Props = {
     handleClose: () => void;
 };
 
+type ActionsProps = {
+    title: string;
+    colour: string;
+    action: () => void;
+};
+
+const ActionsBar: FC<ActionsProps> = ({ title, colour, action }) => {
+    return (
+        <div className="flex items-center justify-between">
+            <div className="flex items-center justify-end">
+                <button
+                    type="button"
+                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-white ring-2 ring-${colour}-500
+                    hover:bg-${colour}-500 hover:text-white focus:outline-none`}
+                    onClick={() => {
+                        console.log(colour);
+                    }}
+                >
+                    {`${title}`}
+                </button>
+            </div>
+        </div>
+    );
+};
+
 export function AddConnectionModal({ show, user, handleClose }: Props) {
+    const [userData, setUserData] = useState<User | undefined>(user);
+    const [status, setStatus] = useState<string>("Request");
+
+    const { user: currentUser } = useUser();
+    const {
+        connections,
+        addConnectionToStore,
+        updateConnectionInStore,
+        deleteConnectionInStore
+    } = useConnectionStore();
+    const isConnection = connections.find(
+        (connection: UserConnection) => connection.userId === userData?.uuid
+    );
+    const handleRequest = async () => {
+        const backendRequest = await addConnection(currentUser?.id, user?.uuid);
+        console.log(backendRequest);
+    };
+    const handleApprove = () => {
+        console.log("Approve");
+    };
+    const handleDisapprove = () => {
+        console.log("Disapprove");
+    };
+    const handleBlock = () => {
+        console.log("Deny");
+    };
+
+    useEffect(() => {
+        if (isConnection?.accepted) {
+            setStatus("Connected");
+        } else if (
+            isConnection?.accepted === false ||
+            isConnection?.accepted === null
+        ) {
+            if (isConnection?.requester_user === currentUser?.id) {
+                setStatus("Requested");
+            } else {
+                setStatus("Accept");
+            }
+        } else if (!isConnection) {
+            setStatus("Request");
+        }
+    }, [isConnection]);
+
+    useEffect(() => {
+        setUserData(user);
+    }, [user]);
+
     return (
         <Transition.Root show={show} as={Fragment}>
             <Dialog as="div" className="relative z-10" onClose={handleClose}>
@@ -52,7 +134,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                             <Image
                                                 className="rounded-full object-cover"
                                                 src={
-                                                    user?.profileImageUrl ??
+                                                    userData?.profileImageUrl ??
                                                     "/placeholder-author.png"
                                                 }
                                                 alt="Connection Image"
@@ -63,22 +145,20 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                             as="h3"
                                             className="text-base font-semibold leading-6 text-gray-900 ml-4"
                                         >
-                                            {user?.fullName}
+                                            {userData?.fullName}
                                         </Dialog.Title>
                                     </div>
-                                    <div className="flex mt-4 w-[90%] justify-between">
-                                        <button
-                                            type="button"
-                                            className="font-semibold rounded-md hover:bg-blue-500 hover:text-white p-2 focus:outline-blue-500"
-                                        >
-                                            Approve
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="font-semibold rounded-md hover:bg-gray-500 hover:text-white p-2 focus:outline-gray-500"
-                                        >
-                                            Block
-                                        </button>
+                                    <div className="flex justify-between mt-4">
+                                        <ActionsBar
+                                            title={status}
+                                            colour="blue"
+                                            action={() => {}}
+                                        />
+                                        <ActionsBar
+                                            title="Block"
+                                            colour="red"
+                                            action={() => {}}
+                                        />
                                     </div>
                                 </div>
                             </Dialog.Panel>
