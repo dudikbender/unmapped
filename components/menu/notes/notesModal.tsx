@@ -88,6 +88,12 @@ export function NotesList({ show, handleClose }: Props) {
                             >
                                 <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                     <div>
+                                        <Dialog.Title
+                                            as="h3"
+                                            className="text-lg leading-6 font-medium text-gray-900 text-center pb-2"
+                                        >
+                                            Your Notes
+                                        </Dialog.Title>
                                         <MenuTabs
                                             tabs={tabs}
                                             initialSelected={tabSelected}
