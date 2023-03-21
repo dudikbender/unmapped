@@ -1,30 +1,30 @@
-import { UserConnection } from "@/services/types/connections";
 import { Note } from "@/services/types/note";
 import { FC } from "react";
 import { MapRef } from "react-map-gl";
-import { NoteItem } from "./noteItem";
+import { NoteListItem } from "./noteListItem";
 
 type Props = {
     notes: Note[];
-    connections: UserConnection[];
+    recipient: boolean;
     mapObject: MapRef | undefined;
     handleClose: () => void;
 };
 
 export const NoteList: FC<Props> = ({
     notes,
-    connections,
+    recipient,
     mapObject,
     handleClose
 }) => {
     return (
         <>
-            <ul className="sm:divide-y sm:divide-blue-100">
+            <ul className="sm:divide-y sm:divide-blue-200">
                 {notes.map((note: Note) => (
-                    <div key={note.uuid} className="py-1 cursor-default">
+                    <div key={note.uuid} className="py-2 cursor-default">
                         <li>
-                            <NoteItem
+                            <NoteListItem
                                 note={note}
+                                recipient={recipient}
                                 mapObject={mapObject}
                                 handleClose={handleClose}
                             />
