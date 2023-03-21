@@ -107,7 +107,7 @@ export const NoteListItem: FC<Props> = ({
                                 </span>
                             </div>
                         </span>
-                        <span className="text-sm text-gray-500">{`~ ${formattedDistance} ${distanceToNoteUnit} away`}</span>
+                        <span className="text-sm text-gray-500">{`~ ${formattedDistance} ${distanceToNoteUnit} from here.`}</span>
                     </div>
                 )}
                 <ArrowRightCircleIcon

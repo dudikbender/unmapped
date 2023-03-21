@@ -21,7 +21,7 @@ import { ZoomInAlert } from "@/components/modals/zoomInAlert";
 import { MapStyle } from "@/services/types/mapObjects";
 import { addNoteRead } from "@/services/database/noteReads/addNoteRead";
 
-const proximityRadius = 5; //0.2; // 0.2km
+const proximityRadius = 0.2; //0.2; // 0.2km
 
 export default function Home() {
     const { user } = useUser();
