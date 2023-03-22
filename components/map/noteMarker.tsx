@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from "react";
+import { FC } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Marker } from "react-map-gl";
 import {
@@ -6,7 +6,6 @@ import {
     EnvelopeOpenIcon,
     PaperAirplaneIcon
 } from "@heroicons/react/24/outline";
-import { useNoteStore } from "@/services/stores/noteStore";
 import { useNoteReadStore } from "@/services/stores/noteReadStore";
 import { Note, NoteRead } from "@/services/types/note";
 

@@ -1,25 +1,37 @@
+// External components and functions
 import { useState, useEffect } from "react";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { BaseMap } from "@/components/map/baseMap";
-import { NoteMarker } from "@/components/map/noteMarker";
-import { Menu } from "@/components/menu/menu";
-import { MapStyleMenu } from "@/components/menu/mapStyleMenu";
-import { CreateNoteModal } from "@/components/modals/createNote";
-import { ReadNoteModal } from "@/components/modals/readNote";
+
+// App state stores
 import { useNoteStore } from "@/services/stores/noteStore";
 import { useConnectionStore } from "@/services/stores/connectionStore";
 import { useNoteReadStore } from "@/services/stores/noteReadStore";
-import { Note, NoteRead } from "@/services/types/note";
-import { LatLng } from "@/services/types/latlng";
-import { getFullNote, getNotes } from "@/services/database/notes/getNotes";
+
+// Mapping components and functions
+import { BaseMap } from "@/components/map/baseMap";
+import { NoteMarker } from "@/components/map/noteMarker";
+
+// UI components
+import { Menu } from "@/components/menu/menu";
+import { MapStyleMenu } from "@/components/menu/mapStyleMenu";
+import { QuickAddMenu } from "@/components/menu/quickAddConnection";
+import { CreateNoteModal } from "@/components/modals/createNote";
+import { ReadNoteModal } from "@/components/modals/readNote";
+import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
+import { ZoomInAlert } from "@/components/modals/zoomInAlert";
+
+// Functions
+import { getNotes } from "@/services/database/notes/getNotes";
 import { getNoteReads } from "@/services/database/noteReads/getNoteReads";
 import { updateNoteRead } from "@/services/database/noteReads/updateNoteRead";
 import { getUserConnections } from "@/services/users/getUserConnections";
 import { haversine } from "@/services/geo/haversine";
-import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
-import { ZoomInAlert } from "@/components/modals/zoomInAlert";
-import { MapStyle } from "@/services/types/mapObjects";
 import { addNoteRead } from "@/services/database/noteReads/addNoteRead";
+
+// Types
+import { Note, NoteRead } from "@/services/types/note";
+import { MapStyle } from "@/services/types/mapObjects";
+import { LatLng } from "@/services/types/latlng";
 
 const proximityRadius = 0.2; //0.2; // 0.2km
 
@@ -358,6 +370,16 @@ export default function Home() {
                         handleStyleSelection={(e) => setMapStyle(e)}
                     />
                 </div>
+                <div className="absolute flex right-0 top-24 pt-4 mr-2 justify-items-center">
+                    <QuickAddMenu
+                        openMenu={menuSelected}
+                        handleSelection={
+                            menuSelected === "add-connection"
+                                ? () => setMenuSelected("")
+                                : () => setMenuSelected("add-connection")
+                        }
+                    />
+                </div>
                 {notes.map((note: Note) => {
                     const noteDistance = haversine(
                         userLatLng.lat,
@@ -369,7 +391,11 @@ export default function Home() {
                         <div
                             key={note.uuid}
                             onClick={() => {
-                                console.log("Note clicked", note);
+                                console.log("Click", note);
+                                handleNoteClick(note, noteDistance);
+                            }}
+                            onTouchEnd={() => {
+                                console.log("Touch", note);
                                 handleNoteClick(note, noteDistance);
                             }}
                         >
