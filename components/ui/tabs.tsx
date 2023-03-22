@@ -33,7 +33,8 @@ export const MenuTabs: FC<Props> = ({ tabs, initialSelected, onChange }) => {
                         id="tabs"
                         name="tabs"
                         className="block w-full rounded-md border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                        defaultValue={tabs[0].name}
+                        defaultValue={selected}
+                        onChange={(e) => setSelected(e.target.value)}
                     >
                         {tabs.map((tab) => (
                             <option key={tab.name}>{tab.name}</option>

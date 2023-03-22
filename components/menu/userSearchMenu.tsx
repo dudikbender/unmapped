@@ -17,7 +17,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-export const QuickAddMenu: FC<Props> = ({ openMenu, handleSelection }) => {
+export const UserSearchMenu: FC<Props> = ({ openMenu, handleSelection }) => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     useEffect(() => {

@@ -14,7 +14,7 @@ import { NoteMarker } from "@/components/map/noteMarker";
 // UI components
 import { Menu } from "@/components/menu/menu";
 import { MapStyleMenu } from "@/components/menu/mapStyleMenu";
-import { QuickAddMenu } from "@/components/menu/quickAddConnection";
+import { UserSearchMenu } from "@/components/menu/userSearchMenu";
 import { CreateNoteModal } from "@/components/modals/createNote";
 import { ReadNoteModal } from "@/components/modals/readNote";
 import { TooFarAlert, DistanceToNoteUnit } from "@/components/modals/tooFar";
@@ -371,7 +371,7 @@ export default function Home() {
                     />
                 </div>
                 <div className="absolute flex right-0 top-24 pt-4 mr-2 justify-items-center">
-                    <QuickAddMenu
+                    <UserSearchMenu
                         openMenu={menuSelected}
                         handleSelection={
                             menuSelected === "add-connection"
