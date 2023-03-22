@@ -1,6 +1,7 @@
 import { createClient, PostgrestError } from "@supabase/supabase-js";
 import { Database } from "@/services/types/supabase";
 import { DatabaseConnection } from "@/services/types/connections";
+import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,7 +20,8 @@ export const addConnection = async (
         requested_user: requested_user,
         accepted: false,
         accepted_date: null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        uuid: uuidv4()
     };
     const { data: Connection, error } = await supabase
         .from("Connections")

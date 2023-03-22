@@ -35,6 +35,7 @@ const ActionsBar: FC<ActionsProps> = ({ title, colour, action }) => {
                     hover:bg-${colour}-500 hover:text-white focus:outline-none`}
                     onClick={() => {
                         console.log(colour);
+                        action();
                     }}
                 >
                     {`${title}`}
@@ -61,6 +62,10 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     const handleRequest = async () => {
         const backendRequest = await addConnection(currentUser?.id, user?.uuid);
         console.log(backendRequest);
+        if (backendRequest) {
+            addConnectionToStore(backendRequest);
+            setStatus("Requested");
+        }
     };
     const handleApprove = () => {
         console.log("Approve");
@@ -70,6 +75,25 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     };
     const handleBlock = () => {
         console.log("Deny");
+    };
+
+    const handleAction = () => {
+        switch (status) {
+            case "Request":
+                handleRequest();
+                break;
+            case "Accept":
+                handleApprove();
+                break;
+            case "Requested":
+                handleDisapprove();
+                break;
+            case "Connected":
+                handleBlock();
+                break;
+            default:
+                break;
+        }
     };
 
     useEffect(() => {
@@ -152,7 +176,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                         <ActionsBar
                                             title={status}
                                             colour="blue"
-                                            action={() => {}}
+                                            action={() => handleAction()}
                                         />
                                         <ActionsBar
                                             title="Block"
