@@ -58,9 +58,6 @@ export const BaseMap: FC<Props> = ({
                         onClick={(e) => {
                             onSelectedPoint(e.lngLat);
                         }}
-                        onTouchEnd={(e) => {
-                            onSelectedPoint(e.lngLat);
-                        }}
                         onZoomEnd={(e) => {
                             if (currentZoomLevel) {
                                 currentZoomLevel(e.viewState.zoom);
