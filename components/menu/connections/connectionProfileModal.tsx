@@ -40,8 +40,6 @@ export function ConnectionProfileModal({
     const notesFromConnection = notes.filter(
         (note: Note) => note?.user_id === connection?.userId
     );
-    console.log("Connections: ", connections);
-    console.log("Status: ", connectionInStore);
 
     const handleNoteList = () => {
         switch (connectionStatus) {

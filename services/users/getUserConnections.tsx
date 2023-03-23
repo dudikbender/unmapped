@@ -15,7 +15,6 @@ export const getUserConnections = async (
     }
 
     const connectionList = connections.map((connection: any) => {
-        console.log("Connection Details: ", connection);
         const connectionData = {
             id: connection.id,
             userId: null,
@@ -42,17 +41,19 @@ export const getUserConnections = async (
             lastName: user.lastName,
             fullName: `${user.firstName} ${user.lastName}`,
             profileImageUrl: user.profileImageUrl,
-            uuid: user.uuid
+            userUUID: user.uuid
         };
     });
     const combinedConnectionData = connectionList.map((connection: any) => {
         const user = filteredUserList.find(
-            (user: any) => user.uuid === connection.userId
+            (user: any) => user.userUUID === connection.userId
         );
+        delete user.userUUID;
         return {
             ...connection,
             ...user
         };
     });
+    console.log("combinedConnectionData", combinedConnectionData);
     return combinedConnectionData;
 };

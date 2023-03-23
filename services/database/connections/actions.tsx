@@ -1,6 +1,5 @@
 import { createClient, PostgrestError } from "@supabase/supabase-js";
 import { Database } from "@/services/types/supabase";
-import { DatabaseConnection } from "@/services/types/connections";
 import { v4 as uuidv4 } from "uuid";
 
 const supabase = createClient<Database>(
@@ -43,6 +42,24 @@ export const acceptConnection = async (
     const { status, error } = await supabase
         .from("Connections")
         .update({ accepted: true, accepted_date: new Date().toISOString() })
+        .eq("uuid", connectionUUID);
+    if (error) {
+        console.log(error);
+        return error;
+    }
+    if (!status || !connectionUUID) {
+        return null;
+    }
+    console.log("Backend", status);
+    return status;
+};
+
+export const unAcceptConnection = async (
+    connectionUUID: string
+): Promise<number | PostgrestError | null> => {
+    const { status, error } = await supabase
+        .from("Connections")
+        .update({ accepted: false, accepted_date: new Date().toISOString() })
         .eq("uuid", connectionUUID);
     if (error) {
         console.log(error);

@@ -16,8 +16,6 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
         undefined
     );
     const { user: currentUser } = useUser();
-    console.log(currentUser);
-    console.log(searchResults);
     const listResults = async () => {
         setSearching(true);
         const response = await searchUsers(searchTerm);

@@ -1,5 +1,5 @@
 import { useState, FC, useEffect } from "react";
-import { UserGroupIcon } from "@heroicons/react/24/outline";
+import { UserGroupIcon, UserPlusIcon } from "@heroicons/react/24/outline";
 import { SearchConnectionModal } from "./connections/searchUsersModal";
 
 type MenuItem = {
@@ -38,7 +38,7 @@ export const UserSearchMenu: FC<Props> = ({ openMenu, handleSelection }) => {
                     handleSelection();
                 }}
             >
-                <UserGroupIcon className="h-6 w-6" />
+                <UserPlusIcon className="h-6 w-6" />
             </div>
             <div>
                 <SearchConnectionModal

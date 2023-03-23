@@ -9,6 +9,7 @@ import { UserConnection } from "@/services/types/connections";
 import {
     addConnection,
     acceptConnection,
+    unAcceptConnection,
     blockConnection,
     deleteConnection
 } from "@/services/database/connections/actions";
@@ -26,15 +27,15 @@ type ActionsProps = {
 };
 
 const ActionsBar: FC<ActionsProps> = ({ title, colour, action }) => {
+    const tailwindCSS = `inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-white ring-2 ring-${colour}-500
+    hover:bg-${colour}-500 hover:text-white focus:outline-none`;
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center justify-end">
                 <button
                     type="button"
-                    className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-white ring-2 ring-${colour}-500
-                    hover:bg-${colour}-500 hover:text-white focus:outline-none`}
+                    className={tailwindCSS}
                     onClick={() => {
-                        console.log(colour);
                         action();
                     }}
                 >
@@ -48,7 +49,7 @@ const ActionsBar: FC<ActionsProps> = ({ title, colour, action }) => {
 export function AddConnectionModal({ show, user, handleClose }: Props) {
     const [userData, setUserData] = useState<User | undefined>(user);
     const [status, setStatus] = useState<string>("Request");
-
+    const [buttonColour, setButtonColour] = useState<string>("blue");
     const { user: currentUser } = useUser();
     const {
         connections,
@@ -59,6 +60,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     const isConnection = connections.find(
         (connection: UserConnection) => connection.userId === userData?.uuid
     );
+    console.log("Connection: ", isConnection);
     const handleRequest = async () => {
         const backendRequest = await addConnection(currentUser?.id, user?.uuid);
         console.log(backendRequest);
@@ -67,14 +69,30 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
             setStatus("Requested");
         }
     };
-    const handleApprove = () => {
-        console.log("Approve");
+    const handleAccept = async () => {
+        console.log(isConnection?.uuid);
+        const backendRequest = await acceptConnection(isConnection.uuid);
+        console.log(backendRequest);
+        if (backendRequest === 204) {
+            updateConnectionInStore(backendRequest);
+            setStatus("Connected");
+        }
     };
-    const handleDisapprove = () => {
-        console.log("Disapprove");
+    const handleDisapprove = async () => {
+        const backendRequest = await unAcceptConnection(isConnection.uuid);
+        console.log(backendRequest);
+        if (backendRequest) {
+            updateConnectionInStore(backendRequest);
+            setStatus("Accept");
+        }
     };
-    const handleBlock = () => {
-        console.log("Deny");
+    const handleBlock = async () => {
+        const backendRequest = await deleteConnection(isConnection.uuid);
+        console.log(backendRequest);
+        if (backendRequest) {
+            deleteConnectionInStore(backendRequest);
+            setStatus("Request");
+        }
     };
 
     const handleAction = () => {
@@ -83,7 +101,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                 handleRequest();
                 break;
             case "Accept":
-                handleApprove();
+                handleAccept();
                 break;
             case "Requested":
                 handleDisapprove();
@@ -99,17 +117,21 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     useEffect(() => {
         if (isConnection?.accepted) {
             setStatus("Connected");
+            setButtonColour("blue");
         } else if (
             isConnection?.accepted === false ||
             isConnection?.accepted === null
         ) {
-            if (isConnection?.requester_user === currentUser?.id) {
+            if (isConnection?.requesterUser === currentUser?.id) {
                 setStatus("Requested");
+                setButtonColour("gray");
             } else {
                 setStatus("Accept");
+                setButtonColour("darkblue");
             }
         } else if (!isConnection) {
             setStatus("Request");
+            setButtonColour("blue");
         }
     }, [isConnection]);
 
@@ -175,13 +197,8 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                     <div className="flex justify-between mt-4">
                                         <ActionsBar
                                             title={status}
-                                            colour="blue"
+                                            colour={buttonColour}
                                             action={() => handleAction()}
-                                        />
-                                        <ActionsBar
-                                            title="Block"
-                                            colour="red"
-                                            action={() => {}}
                                         />
                                     </div>
                                 </div>
