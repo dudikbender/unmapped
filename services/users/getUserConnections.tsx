@@ -15,9 +15,11 @@ export const getUserConnections = async (
     }
 
     const connectionList = connections.map((connection: any) => {
+        console.log("Connection Details: ", connection);
         const connectionData = {
             id: connection.id,
             userId: null,
+            requesterUser: connection.requester_user,
             uuid: connection.uuid,
             accepted: connection.accepted,
             acceptedDate: connection.accepted_date,

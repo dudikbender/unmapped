@@ -19,4 +19,5 @@ export type UserConnection = {
     lastName?: string;
     profileImageUrl?: string;
     fullName: string;
+    requesterUser?: string;
 };

@@ -14,13 +14,15 @@ type Props = {
     recipient: boolean;
     mapObject: MapRef | undefined;
     handleClose: () => void;
+    includeSenderName?: boolean;
 };
 
 export const NoteListItem: FC<Props> = ({
     note,
     recipient,
     mapObject,
-    handleClose
+    handleClose,
+    includeSenderName = true
 }) => {
     const { connections } = useConnectionStore();
     const noteSender = connections.find(
@@ -60,17 +62,23 @@ export const NoteListItem: FC<Props> = ({
                         <span className="text-sm text-gray-900">
                             {recipient ? (
                                 <div className="flex">
-                                    <Image
-                                        src={noteSender?.profileImageUrl}
-                                        alt={`Note from ${noteSender?.firstName} ${noteSender?.lastName}.`}
-                                        className="rounded-full h-6 w-6 flex-none inline-block"
-                                        width={20}
-                                        height={20}
-                                        title={`from ${noteSender?.firstName} ${noteSender?.lastName}.`}
-                                    />
-                                    <span className="ml-2">
-                                        {`${noteSender?.firstName} ${noteSender?.lastName[0]}.`}
-                                    </span>
+                                    {includeSenderName ? (
+                                        <>
+                                            <Image
+                                                src={
+                                                    noteSender?.profileImageUrl
+                                                }
+                                                alt="Profile Image"
+                                                className="rounded-full h-6 w-6 flex-none inline-block"
+                                                width={20}
+                                                height={20}
+                                            />
+
+                                            <span className="ml-2">
+                                                {`${noteSender?.firstName} ${noteSender?.lastName[0]}.`}
+                                            </span>
+                                        </>
+                                    ) : null}
                                 </div>
                             ) : (
                                 <div className="flex">
@@ -95,16 +103,21 @@ export const NoteListItem: FC<Props> = ({
                     <div>
                         <span className="text-sm text-gray-900">
                             <div className="flex">
-                                <Image
-                                    src={noteSender?.profileImageUrl}
-                                    alt="Profile Image"
-                                    className="rounded-full h-6 w-6 flex-none inline-block"
-                                    width={20}
-                                    height={20}
-                                />
-                                <span className="ml-2">
-                                    {`${noteSender?.firstName} ${noteSender?.lastName[0]}.`}
-                                </span>
+                                {includeSenderName ? (
+                                    <>
+                                        <Image
+                                            src={noteSender?.profileImageUrl}
+                                            alt="Profile Image"
+                                            className="rounded-full h-6 w-6 flex-none inline-block"
+                                            width={20}
+                                            height={20}
+                                        />
+
+                                        <span className="ml-2">
+                                            {`${noteSender?.firstName} ${noteSender?.lastName[0]}.`}
+                                        </span>
+                                    </>
+                                ) : null}
                             </div>
                         </span>
                         <span className="text-sm text-gray-500">{`~ ${formattedDistance} ${distanceToNoteUnit} from here.`}</span>

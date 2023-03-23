@@ -1,11 +1,17 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { UserConnection } from "@/services/types/connections";
+import {
+    UserConnection,
+    DatabaseConnection
+} from "@/services/types/connections";
 import { XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
 import { useMap } from "react-map-gl";
+import { useConnectionStore } from "@/services/stores/connectionStore";
+import { NotesFromConnection } from "./notesFromConnection";
+import { NoteList } from "../notes/notesList";
 
 type Props = {
     show: boolean;
@@ -20,17 +26,52 @@ export function ConnectionProfileModal({
 }: Props) {
     const { notes } = useNoteStore();
     const { baseMap } = useMap();
+    const { connections } = useConnectionStore();
+    const connectionInStore = connections.find(
+        (conn: UserConnection) => conn?.userId === connection?.userId
+    );
+    const connectionStatus = connectionInStore
+        ? connectionInStore?.accepted
+            ? "Connected"
+            : connectionInStore?.requesterUser === connection?.userId
+            ? "Accept" // Waiting for the other user to accept the inviation to connect
+            : "Pending" // Waiting for the current user to accept the invitation to connect
+        : "None";
     const notesFromConnection = notes.filter(
         (note: Note) => note?.user_id === connection?.userId
     );
+    console.log("Connections: ", connections);
+    console.log("Status: ", connectionInStore);
 
-    const flyToNoteLocation = (noteLocation: { lat: number; lng: number }) => {
-        baseMap?.flyTo({
-            center: [noteLocation.lng, noteLocation.lat],
-            zoom: 15,
-            speed: 1.25
-        });
-        handleClose();
+    const handleNoteList = () => {
+        switch (connectionStatus) {
+            case "Connected":
+                return (
+                    <NotesFromConnection
+                        notes={notesFromConnection}
+                        mapObject={baseMap}
+                        handleClose={handleClose}
+                    />
+                );
+            case "Pending":
+                return (
+                    <div className="flex flex-col items-center justify-center">
+                        <h3>{`Waiting for ${connection?.firstName} to accept your connection request`}</h3>
+                    </div>
+                );
+            case "Accept":
+                return (
+                    <div className="flex flex-col items-center justify-center">
+                        <h3>{`Accept ${connection?.firstName}'s request to connect.`}</h3>
+                    </div>
+                );
+            case "None":
+                return (
+                    <div className="flex flex-col items-center justify-center">
+                        <h3>{`Ask ${connection?.firstName} to connect from the sidebar menu.`}</h3>
+                    </div>
+                );
+        }
     };
 
     return (
@@ -59,7 +100,7 @@ export function ConnectionProfileModal({
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                 <div>
                                     <div
                                         key="close-modal-button"
@@ -89,38 +130,12 @@ export function ConnectionProfileModal({
                                         </Dialog.Title>
                                     </div>
                                     <div className="mt-6">
-                                        <span className="text-sm font-semibold text-gray-700">
-                                            Notes from {connection?.firstName}
-                                        </span>
-                                    </div>
-                                    <div className="flex mt-2">
-                                        <ul className="sm:divide-y sm:divide-blue-100">
-                                            {notesFromConnection.map(
-                                                (note: Note) => (
-                                                    <div
-                                                        key={note.uuid}
-                                                        className="py-1 cursor-default"
-                                                    >
-                                                        <li>
-                                                            {note.content}
-                                                            {` `}
-                                                            <span className="italic"></span>
-                                                            <ArrowRightCircleIcon
-                                                                className="h-5 w-5 inline-block ml-2 text-blue-400 hover:text-blue-500 hover:cursor-pointer"
-                                                                onClick={() =>
-                                                                    flyToNoteLocation(
-                                                                        {
-                                                                            lat: note.latitude,
-                                                                            lng: note.longitude
-                                                                        }
-                                                                    )
-                                                                }
-                                                            />
-                                                        </li>
-                                                    </div>
-                                                )
-                                            )}
-                                        </ul>
+                                        {handleNoteList()}
+                                        {/* <NotesFromConnection
+                                            notes={notesFromConnection}
+                                            mapObject={baseMap}
+                                            handleClose={handleClose}
+                                        /> */}
                                     </div>
                                 </div>
                             </Dialog.Panel>
