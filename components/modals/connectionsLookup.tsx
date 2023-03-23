@@ -13,7 +13,10 @@ export const ConnectionsLookup: FC<Props> = ({ handleSelection }) => {
     const [selected, setSelected] = useState<UserConnection | null>(null);
     const [query, setQuery] = useState<string>("");
     const { connections } = useConnectionStore();
-    const connectionsOrdered = connections.sort((a: any, b: any) =>
+    const connectionsList = connections.filter(
+        (connection: UserConnection) => connection?.accepted === true
+    );
+    const connectionsOrdered = connectionsList.sort((a: any, b: any) =>
         a?.lastName.localeCompare(b?.lastName)
     );
 

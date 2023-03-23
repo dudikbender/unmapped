@@ -60,7 +60,6 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     const isConnection = connections.find(
         (connection: UserConnection) => connection.userId === userData?.uuid
     );
-    console.log("Connection: ", isConnection);
     const handleRequest = async () => {
         const backendRequest = await addConnection(currentUser?.id, user?.uuid);
         console.log(backendRequest);
