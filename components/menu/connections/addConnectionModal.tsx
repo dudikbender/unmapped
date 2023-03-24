@@ -10,7 +10,6 @@ import {
     addConnection,
     acceptConnection,
     unAcceptConnection,
-    blockConnection,
     deleteConnection
 } from "@/services/database/connections/actions";
 
