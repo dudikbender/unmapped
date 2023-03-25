@@ -52,14 +52,14 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
                             setSearchTerm(e.target.value);
                         }}
                     />
-                    {searching && (
-                        <span className="p-1 font-semibold text-sm outline-none">
-                            Searching...
-                        </span>
-                    )}
                 </div>
                 {searchResults.length > 0 && (
                     <div className="mt-4">
+                        {searching && (
+                            <span className="p-1 font-semibold text-sm outline-none">
+                                Searching...
+                            </span>
+                        )}
                         <ul>
                             {searchResults.map((user) => (
                                 <div

@@ -63,7 +63,7 @@ export function SearchConnectionModal({ show, handleClose }: Props) {
                                                 as="h3"
                                                 className="text-base font-semibold leading-6 text-gray-900 ml-4"
                                             >
-                                                Add Connection
+                                                Find a User
                                             </Dialog.Title>
                                         </div>
                                         <div className="mt-6"></div>
