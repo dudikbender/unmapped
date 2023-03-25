@@ -5,6 +5,8 @@ declare global {
             CLERK_SECRET_KEY: string;
             NEXT_PUBLIC_MAPBOX_TOKEN: string;
             TEST: string;
+            NEXT_PUBLIC_SUPABASE_URL: string;
+            NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
         }
     }
 }
