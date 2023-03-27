@@ -9,7 +9,6 @@ import { UserConnection } from "@/services/types/connections";
 import {
     addConnection,
     acceptConnection,
-    unAcceptConnection,
     deleteConnection
 } from "@/services/database/connections/actions";
 
@@ -20,35 +19,104 @@ type Props = {
 };
 
 type ActionsProps = {
-    title: string;
-    colour: string;
+    status: string;
     action: () => void;
 };
 
-const ActionsBar: FC<ActionsProps> = ({ title, colour, action }) => {
-    const tailwindCSS = `inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-gray-900 bg-white ring-2 ring-${colour}-500
-    hover:bg-${colour}-500 hover:text-white focus:outline-none`;
+type StatusTagProps = {
+    status: string;
+};
+
+const ActionsBar: FC<ActionsProps> = ({ status, action }) => {
+    const baseTailwindCSS = `inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-white ring-2 hover:text-white focus:outline-none`;
+    const colourPicker = (status: string) => {
+        switch (status) {
+            case "Request":
+                return "ring-blue-500 hover:bg-blue-500 text-gray-900";
+            case "Requested":
+                return "ring-yellow-500 hover:bg-yellow-500  text-gray-900";
+            case "Accept":
+                return "ring-green-500 hover:bg-green-500 text-gray-900";
+            case "Connected":
+                return "ring-gray-500 hover:bg-gray-500 text-gray-900";
+            default:
+                return "ring-blue-500 hover:bg-blue-500 text-gray-900";
+        }
+    };
+    const titlePicker = (status: string) => {
+        switch (status) {
+            case "Request":
+                return "Request";
+            case "Requested":
+                return "Delete Request";
+            case "Accept":
+                return "Accept";
+            case "Connected":
+                return "Disconnect";
+            default:
+                return "Request";
+        }
+    };
     return (
         <div className="flex items-center justify-between">
             <div className="flex items-center justify-end">
                 <button
                     type="button"
-                    className={tailwindCSS}
+                    className={`${baseTailwindCSS} ${colourPicker(status)}`}
                     onClick={() => {
                         action();
                     }}
                 >
-                    {`${title}`}
+                    {`${titlePicker(status)}`}
                 </button>
             </div>
         </div>
     );
 };
 
+const StatusTag: FC<StatusTagProps> = ({ status }) => {
+    const baseTailwindCSS = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-800 cursor-default`;
+    const colourPicker = (status: string) => {
+        switch (status) {
+            case "Request":
+                return "bg-blue-100 text-blue-800";
+            case "Requested":
+                return "bg-yellow-100 text-yellow-800";
+            case "Accept":
+                return "bg-green-100 text-green-800";
+            case "Connected":
+                return "bg-green-100 text-green-800";
+            case "Disconnect":
+                return "bg-red-100 text-red-800";
+            default:
+                return "bg-blue-100 text-blue-800";
+        }
+    };
+
+    const titlePicker = (status: string) => {
+        switch (status) {
+            case "Request":
+                return "Not Connected";
+            case "Requested":
+                return "Requested";
+            case "Accept":
+                return "Pending";
+            case "Connected":
+                return "Connected";
+            default:
+                return "Not Connected";
+        }
+    };
+    return (
+        <span className={`${baseTailwindCSS} ${colourPicker(status)}`}>
+            {titlePicker(status)}
+        </span>
+    );
+};
+
 export function AddConnectionModal({ show, user, handleClose }: Props) {
     const [userData, setUserData] = useState<User | undefined>(user);
     const [status, setStatus] = useState<string>("Request");
-    const [buttonColour, setButtonColour] = useState<string>("blue");
     const { user: currentUser } = useUser();
     const {
         connections,
@@ -60,35 +128,41 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
         (connection: UserConnection) => connection.userId === userData?.uuid
     );
     const handleRequest = async () => {
+        if (isConnection) {
+            return;
+        }
         const backendRequest = await addConnection(currentUser?.id, user?.uuid);
-        console.log(backendRequest);
-        if (backendRequest) {
-            addConnectionToStore(backendRequest);
+
+        if (backendRequest[0]) {
+            const newConnection: UserConnection = {
+                id: backendRequest[0].id,
+                uuid: backendRequest[0].uuid,
+                userId: user?.uuid,
+                accepted: false,
+                acceptedDate: backendRequest[0].accepted_date,
+                requesterUser: currentUser?.id,
+                firstName: user?.firstName,
+                lastName: user?.lastName,
+                fullName: `${user?.firstName} ${user?.lastName}`,
+                profileImageUrl: user?.profileImageUrl,
+                createdAt: backendRequest[0].created_at
+            };
             setStatus("Requested");
+            addConnectionToStore(newConnection);
         }
     };
     const handleAccept = async () => {
         console.log(isConnection?.uuid);
         const backendRequest = await acceptConnection(isConnection.uuid);
-        console.log(backendRequest);
         if (backendRequest === 204) {
             updateConnectionInStore(backendRequest);
             setStatus("Connected");
         }
     };
-    const handleDisapprove = async () => {
-        const backendRequest = await unAcceptConnection(isConnection.uuid);
-        console.log(backendRequest);
-        if (backendRequest) {
-            updateConnectionInStore(backendRequest);
-            setStatus("Accept");
-        }
-    };
-    const handleBlock = async () => {
+    const handleDisconnect = async () => {
         const backendRequest = await deleteConnection(isConnection.uuid);
-        console.log(backendRequest);
-        if (backendRequest) {
-            deleteConnectionInStore(backendRequest);
+        if (backendRequest === 204) {
+            deleteConnectionInStore(isConnection.uuid);
             setStatus("Request");
         }
     };
@@ -102,10 +176,10 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                 handleAccept();
                 break;
             case "Requested":
-                handleDisapprove();
+                handleDisconnect();
                 break;
             case "Connected":
-                handleBlock();
+                handleDisconnect();
                 break;
             default:
                 break;
@@ -115,23 +189,19 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
     useEffect(() => {
         if (isConnection?.accepted) {
             setStatus("Connected");
-            setButtonColour("blue");
         } else if (
             isConnection?.accepted === false ||
             isConnection?.accepted === null
         ) {
             if (isConnection?.requesterUser === currentUser?.id) {
                 setStatus("Requested");
-                setButtonColour("gray");
             } else {
                 setStatus("Accept");
-                setButtonColour("darkblue");
             }
         } else if (!isConnection) {
             setStatus("Request");
-            setButtonColour("blue");
         }
-    }, [isConnection]);
+    }, [isConnection, connections, status]);
 
     useEffect(() => {
         setUserData(user);
@@ -164,7 +234,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
                             <Dialog.Panel className="relative w-[90%] transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                                <div>
+                                <div key="profile-overview">
                                     <div
                                         key="close-modal-button"
                                         aria-details="close-modal-button"
@@ -185,17 +255,24 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                                                 fill={true}
                                             />
                                         </div>
-                                        <Dialog.Title
-                                            as="h3"
-                                            className="text-base font-semibold leading-6 text-gray-900 ml-4"
-                                        >
-                                            {userData?.fullName}
-                                        </Dialog.Title>
+                                        <div className="grid">
+                                            <Dialog.Title
+                                                as="h3"
+                                                className="text-base font-semibold leading-6 text-gray-900 ml-4 pl-1"
+                                            >
+                                                {userData?.fullName}
+                                            </Dialog.Title>
+                                            <div
+                                                id="status-tag"
+                                                className="ml-4"
+                                            >
+                                                <StatusTag status={status} />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="flex justify-between mt-4">
                                         <ActionsBar
-                                            title={status}
-                                            colour={buttonColour}
+                                            status={status}
                                             action={() => handleAction()}
                                         />
                                     </div>

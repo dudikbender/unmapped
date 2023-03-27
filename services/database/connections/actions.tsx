@@ -24,7 +24,7 @@ export const addConnection = async (
     };
     const { data: Connection, error } = await supabase
         .from("Connections")
-        .insert(connectionData)
+        .upsert(connectionData)
         .select("*");
     if (error) {
         console.log(error);
@@ -51,40 +51,6 @@ export const acceptConnection = async (
         return null;
     }
     console.log("Backend", status);
-    return status;
-};
-
-export const unAcceptConnection = async (
-    connectionUUID: string
-): Promise<number | PostgrestError | null> => {
-    const { status, error } = await supabase
-        .from("Connections")
-        .update({ accepted: false, accepted_date: new Date().toISOString() })
-        .eq("uuid", connectionUUID);
-    if (error) {
-        console.log(error);
-        return error;
-    }
-    if (!status || !connectionUUID) {
-        return null;
-    }
-    return status;
-};
-
-export const blockConnection = async (
-    connectionUUID: string
-): Promise<number | PostgrestError | null> => {
-    const { status, error } = await supabase
-        .from("Connections")
-        .update({ accepted: false, accepted_date: null })
-        .eq("uuid", connectionUUID);
-    if (error) {
-        console.log(error);
-        return error;
-    }
-    if (!status || !connectionUUID) {
-        return null;
-    }
     return status;
 };
 

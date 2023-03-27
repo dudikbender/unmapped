@@ -86,7 +86,7 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
                         </ul>
                     </div>
                 )}
-                {searchTerm.length > 2 && searchResults.length === 0 ? (
+                {searchTerm.length > 3 && searchResults.length === 0 ? (
                     <div className="mt-4">
                         <button
                             className="p-2 rounded-md bg-blue-500 text-white"
