@@ -40,7 +40,7 @@ export interface Database {
             };
             Connections: {
                 Row: {
-                    accepted: boolean | null;
+                    accepted: boolean;
                     accepted_date: string | null;
                     created_at: string | null;
                     id: number;
@@ -49,16 +49,16 @@ export interface Database {
                     uuid: string;
                 };
                 Insert: {
-                    accepted?: boolean | null;
+                    accepted?: boolean;
                     accepted_date?: string | null;
                     created_at?: string | null;
                     id?: number;
                     requested_user: string;
                     requester_user: string;
-                    uuid?: string;
+                    uuid: string;
                 };
                 Update: {
-                    accepted?: boolean | null;
+                    accepted?: boolean;
                     accepted_date?: string | null;
                     created_at?: string | null;
                     id?: number;
@@ -67,33 +67,59 @@ export interface Database {
                     uuid?: string;
                 };
             };
-            NoteReads: {
+            Feedback: {
                 Row: {
                     created_at: string | null;
+                    content: string | null;
                     id: number;
-                    uuid?: string;
-                    last_read: string | null;
-                    note_id: string;
-                    starred: boolean | null;
+                    replied_to: boolean | null;
+                    user_email: string | null;
                     user_id: string;
                 };
                 Insert: {
                     created_at?: string | null;
+                    content?: string | null;
                     id?: number;
-                    uuid?: string;
-                    last_read?: string | null;
-                    note_id: string;
-                    starred?: boolean | null;
+                    replied_to?: boolean | null;
+                    user_email?: string | null;
                     user_id: string;
                 };
                 Update: {
                     created_at?: string | null;
+                    content?: string | null;
                     id?: number;
+                    replied_to?: boolean | null;
+                    user_email?: string | null;
+                    user_id?: string;
+                };
+            };
+            NoteReads: {
+                Row: {
+                    created_at: string | null;
+                    id: number;
+                    last_read: string | null;
+                    note_id: string;
+                    starred: boolean | null;
+                    user_id: string;
+                    uuid: string;
+                };
+                Insert: {
+                    created_at?: string | null;
+                    id?: number;
+                    last_read?: string | null;
+                    note_id?: string;
+                    starred?: boolean | null;
+                    user_id: string;
                     uuid?: string;
+                };
+                Update: {
+                    created_at?: string | null;
+                    id?: number;
                     last_read?: string | null;
                     note_id?: string;
                     starred?: boolean | null;
                     user_id?: string;
+                    uuid?: string;
                 };
             };
             Notes: {

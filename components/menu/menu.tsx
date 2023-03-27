@@ -5,6 +5,7 @@ import { NotesList } from "./notes/notesModal";
 import { ConnectionsModal } from "./connections/connectionsModal";
 import { SearchConnectionModal } from "./connections/searchUsersModal";
 import { ShareModal } from "./share/shareModal";
+import { FeedbackModal } from "./feedback/feedbackModal";
 
 type MenuItem = {
     text: string;
@@ -32,6 +33,11 @@ export const menuItems: Record<string, MenuItem> = {
         text: "share",
         icon: "share",
         activation: "share"
+    },
+    feedback: {
+        text: "feedback",
+        icon: "feedback",
+        activation: "feedback"
     },
     profile: {
         text: "settings",
@@ -110,6 +116,12 @@ export const Menu: FC<Props> = ({ openMenu, handleSelection }) => {
             <div>
                 <SearchConnectionModal
                     show={secondaryMenu === "add-connection"}
+                    handleClose={() => setSecondaryMenu("")}
+                />
+            </div>
+            <div>
+                <FeedbackModal
+                    show={secondaryMenu === "feedback"}
                     handleClose={() => setSecondaryMenu("")}
                 />
             </div>
