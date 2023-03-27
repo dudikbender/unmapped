@@ -54,6 +54,5 @@ export const getUserConnections = async (
             ...user
         };
     });
-    console.log("combinedConnectionData", combinedConnectionData);
     return combinedConnectionData;
 };
