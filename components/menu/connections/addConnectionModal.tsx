@@ -11,107 +11,13 @@ import {
     acceptConnection,
     deleteConnection
 } from "@/services/database/connections/actions";
+import { ActionsBar } from "./actionsBar";
+import { StatusTag } from "./statusTag";
 
 type Props = {
     show: boolean;
     user?: User;
     handleClose: () => void;
-};
-
-type ActionsProps = {
-    status: string;
-    action: () => void;
-};
-
-type StatusTagProps = {
-    status: string;
-};
-
-const ActionsBar: FC<ActionsProps> = ({ status, action }) => {
-    const baseTailwindCSS = `inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md bg-white ring-2 hover:text-white focus:outline-none`;
-    const colourPicker = (status: string) => {
-        switch (status) {
-            case "Request":
-                return "ring-blue-500 hover:bg-blue-500 text-gray-900";
-            case "Requested":
-                return "ring-yellow-500 hover:bg-yellow-500  text-gray-900";
-            case "Accept":
-                return "ring-green-500 hover:bg-green-500 text-gray-900";
-            case "Connected":
-                return "ring-gray-500 hover:bg-gray-500 text-gray-900";
-            default:
-                return "ring-blue-500 hover:bg-blue-500 text-gray-900";
-        }
-    };
-    const titlePicker = (status: string) => {
-        switch (status) {
-            case "Request":
-                return "Request";
-            case "Requested":
-                return "Delete Request";
-            case "Accept":
-                return "Accept";
-            case "Connected":
-                return "Disconnect";
-            default:
-                return "Request";
-        }
-    };
-    return (
-        <div className="flex items-center justify-between">
-            <div className="flex items-center justify-end">
-                <button
-                    type="button"
-                    className={`${baseTailwindCSS} ${colourPicker(status)}`}
-                    onClick={() => {
-                        action();
-                    }}
-                >
-                    {`${titlePicker(status)}`}
-                </button>
-            </div>
-        </div>
-    );
-};
-
-const StatusTag: FC<StatusTagProps> = ({ status }) => {
-    const baseTailwindCSS = `inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-gray-100 text-gray-800 cursor-default`;
-    const colourPicker = (status: string) => {
-        switch (status) {
-            case "Request":
-                return "bg-blue-100 text-blue-800";
-            case "Requested":
-                return "bg-yellow-100 text-yellow-800";
-            case "Accept":
-                return "bg-green-100 text-green-800";
-            case "Connected":
-                return "bg-green-100 text-green-800";
-            case "Disconnect":
-                return "bg-red-100 text-red-800";
-            default:
-                return "bg-blue-100 text-blue-800";
-        }
-    };
-
-    const titlePicker = (status: string) => {
-        switch (status) {
-            case "Request":
-                return "Not Connected";
-            case "Requested":
-                return "Requested";
-            case "Accept":
-                return "Pending";
-            case "Connected":
-                return "Connected";
-            default:
-                return "Not Connected";
-        }
-    };
-    return (
-        <span className={`${baseTailwindCSS} ${colourPicker(status)}`}>
-            {titlePicker(status)}
-        </span>
-    );
 };
 
 export function AddConnectionModal({ show, user, handleClose }: Props) {
@@ -147,7 +53,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
                 profileImageUrl: user?.profileImageUrl,
                 createdAt: backendRequest[0].created_at
             };
-            setStatus("Requested");
+            setStatus("Pending");
             addConnectionToStore(newConnection);
         }
     };
@@ -175,7 +81,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
             case "Accept":
                 handleAccept();
                 break;
-            case "Requested":
+            case "Pending":
                 handleDisconnect();
                 break;
             case "Connected":
@@ -194,7 +100,7 @@ export function AddConnectionModal({ show, user, handleClose }: Props) {
             isConnection?.accepted === null
         ) {
             if (isConnection?.requesterUser === currentUser?.id) {
-                setStatus("Requested");
+                setStatus("Pending");
             } else {
                 setStatus("Accept");
             }

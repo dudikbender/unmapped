@@ -1,16 +1,21 @@
-import { Fragment } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-    UserConnection,
-    DatabaseConnection
-} from "@/services/types/connections";
-import { XMarkIcon, ArrowRightCircleIcon } from "@heroicons/react/24/outline";
+import { UserConnection } from "@/services/types/connections";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import { useNoteStore } from "@/services/stores/noteStore";
 import { Note } from "@/services/types/note";
+import { useUser } from "@clerk/nextjs";
 import { useMap } from "react-map-gl";
 import { useConnectionStore } from "@/services/stores/connectionStore";
 import { NotesFromConnection } from "./notesFromConnection";
+import { StatusTag } from "./statusTag";
+import { ActionsBar } from "./actionsBar";
+import {
+    addConnection,
+    acceptConnection,
+    deleteConnection
+} from "@/services/database/connections/actions";
 
 type Props = {
     show: boolean;
@@ -25,7 +30,14 @@ export function ConnectionProfileModal({
 }: Props) {
     const { notes } = useNoteStore();
     const { baseMap } = useMap();
-    const { connections } = useConnectionStore();
+    const { user: currentUser } = useUser();
+    const {
+        connections,
+        addConnectionToStore,
+        updateConnectionInStore,
+        deleteConnectionInStore
+    } = useConnectionStore();
+    const [status, setStatus] = useState<string>("Connected");
     const connectionInStore = connections.find(
         (conn: UserConnection) => conn?.userId === connection?.userId
     );
@@ -40,15 +52,57 @@ export function ConnectionProfileModal({
         (note: Note) => note?.user_id === connection?.userId
     );
 
+    console.log(connectionInStore);
+
+    const handleAccept = async () => {
+        console.log(connectionInStore?.uuid);
+        const backendRequest = await acceptConnection(connectionInStore.uuid);
+        if (backendRequest === 204) {
+            const newConnection = connectionInStore;
+            newConnection.accepted = true;
+            newConnection.acceptedDate = new Date();
+            updateConnectionInStore(newConnection);
+            setStatus("Connected");
+        }
+    };
+    const handleDisconnect = async () => {
+        const backendRequest = await deleteConnection(connectionInStore.uuid);
+        if (backendRequest === 204) {
+            deleteConnectionInStore(connectionInStore.uuid);
+            handleClose;
+        }
+    };
+
+    const handleAction = () => {
+        switch (connectionStatus) {
+            case "Accept":
+                handleAccept();
+                break;
+            case "Pending":
+                handleDisconnect();
+                break;
+            case "Connected":
+                handleDisconnect();
+                break;
+            default:
+                break;
+        }
+    };
+
     const handleNoteList = () => {
         switch (connectionStatus) {
             case "Connected":
                 return (
-                    <NotesFromConnection
-                        notes={notesFromConnection}
-                        mapObject={baseMap}
-                        handleClose={handleClose}
-                    />
+                    <>
+                        <div className="mt-4 font-semibold text-lg">
+                            Notes from {connection?.firstName}
+                        </div>
+                        <NotesFromConnection
+                            notes={notesFromConnection}
+                            mapObject={baseMap}
+                            handleClose={handleClose}
+                        />
+                    </>
                 );
             case "Pending":
                 return (
@@ -62,14 +116,31 @@ export function ConnectionProfileModal({
                         <h3>{`Accept ${connection?.firstName}'s request to connect.`}</h3>
                     </div>
                 );
-            case "None":
-                return (
-                    <div className="flex flex-col items-center justify-center">
-                        <h3>{`Ask ${connection?.firstName} to connect from the sidebar menu.`}</h3>
-                    </div>
-                );
         }
     };
+
+    useEffect(() => {
+        if (connectionInStore?.accepted) {
+            setStatus("Connected");
+        } else if (
+            connectionInStore?.accepted === false ||
+            connectionInStore?.accepted === null
+        ) {
+            if (connectionInStore?.requesterUser === currentUser?.id) {
+                setStatus("Pending");
+            } else {
+                setStatus("Accept");
+            }
+        } else {
+            setStatus("None");
+        }
+    }, [connectionInStore, connections, status]);
+
+    useEffect(() => {
+        if (connectionStatus === "None" || connectionStatus === null) {
+            handleClose();
+        }
+    }, [connectionStatus]);
 
     return (
         <Transition.Root show={show} as={Fragment}>
@@ -97,7 +168,7 @@ export function ConnectionProfileModal({
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
+                            <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-10 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                                 <div>
                                     <div
                                         key="close-modal-button"
@@ -107,7 +178,7 @@ export function ConnectionProfileModal({
                                     >
                                         <XMarkIcon className="h-6 w-6" />
                                     </div>
-                                    <div className="flex items-center">
+                                    <div className="flex items-center mr-12">
                                         <div className="relative h-[50px] w-[50px]">
                                             <Image
                                                 className="rounded-full object-cover"
@@ -119,14 +190,28 @@ export function ConnectionProfileModal({
                                                 fill={true}
                                             />
                                         </div>
-                                        <Dialog.Title
-                                            as="h3"
-                                            className="text-base font-semibold leading-6 text-gray-900 ml-4"
-                                        >
-                                            {connection?.fullName}
-                                        </Dialog.Title>
+                                        <div className="grid">
+                                            <Dialog.Title
+                                                as="h3"
+                                                className="text-base font-semibold leading-6 text-gray-900 ml-4 pl-1"
+                                            >
+                                                {connection?.fullName}
+                                            </Dialog.Title>
+                                            <div
+                                                id="status-tag"
+                                                className="ml-4"
+                                            >
+                                                <StatusTag status={status} />
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div className="mt-6">
+                                    <div className="flex mt-6">
+                                        <ActionsBar
+                                            status={status}
+                                            action={() => handleAction()}
+                                        />
+                                    </div>
+                                    <div className="flex mt-2">
                                         {handleNoteList()}
                                     </div>
                                 </div>
