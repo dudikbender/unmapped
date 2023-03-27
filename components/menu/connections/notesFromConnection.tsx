@@ -15,7 +15,6 @@ export const NotesFromConnection: FC<Props> = ({
     mapObject,
     handleClose
 }) => {
-    const { user } = useUser();
     return (
         <>
             <ul className="sm:divide-y sm:divide-blue-200">

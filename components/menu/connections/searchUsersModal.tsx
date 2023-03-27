@@ -66,7 +66,7 @@ export function SearchConnectionModal({ show, handleClose }: Props) {
                                                 Find a User
                                             </Dialog.Title>
                                         </div>
-                                        <div className="mt-6"></div>
+                                        <div className="mt-4"></div>
                                         <SearchUsersInput
                                             handleSelection={(user) => {
                                                 setSelectedUser(user);

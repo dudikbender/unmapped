@@ -2,6 +2,7 @@ import { useState, useEffect, FC } from "react";
 import { useUser } from "@clerk/nextjs";
 import { User } from "@/services/types/user";
 import { searchUsers } from "@/services/users/searchUsers";
+import { ShareModal } from "../share/shareModal";
 import Image from "next/image";
 
 type Props = {
@@ -15,6 +16,7 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
     const [selectedUser, setSelectedUser] = useState<User | undefined>(
         undefined
     );
+    const [sharePrompt, setSharePrompt] = useState<boolean>(false);
     const { user: currentUser } = useUser();
     const listResults = async () => {
         setSearching(true);
@@ -45,8 +47,8 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
                 <div className="flex items-center justify-between border-2 border-blue-200 rounded-md">
                     <input
                         type="text"
-                        className="p-1 focus:outline-blue-500 w-full focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="Search for users"
+                        className="p-1 pl-2 focus:outline-blue-500 w-full focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Type for options..."
                         value={searchTerm}
                         onChange={(e) => {
                             setSearchTerm(e.target.value);
@@ -84,7 +86,21 @@ export const SearchUsersInput: FC<Props> = ({ handleSelection }) => {
                         </ul>
                     </div>
                 )}
+                {searchTerm.length > 2 && searchResults.length === 0 ? (
+                    <div className="mt-4">
+                        <button
+                            className="p-2 rounded-md bg-blue-500 text-white"
+                            onClick={() => setSharePrompt(true)}
+                        >
+                            Share Unmapped with {searchTerm}?{" "}
+                        </button>
+                    </div>
+                ) : null}
             </div>
+            <ShareModal
+                show={sharePrompt}
+                handleClose={() => setSharePrompt(false)}
+            />
         </>
     );
 };

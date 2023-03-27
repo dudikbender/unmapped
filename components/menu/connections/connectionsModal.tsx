@@ -126,6 +126,7 @@ export function ConnectionsModal({
                 connection={selectedProfile ?? undefined}
                 handleClose={() => {
                     setShowProfile(false);
+                    handleClose();
                 }}
             />
         </>

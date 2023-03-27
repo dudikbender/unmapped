@@ -106,7 +106,9 @@ export const Menu: FC<Props> = ({ openMenu, handleSelection }) => {
             <div>
                 <ConnectionsModal
                     show={secondaryMenu === "connections"}
-                    handleClose={() => setSecondaryMenu("")}
+                    handleClose={() => {
+                        setSecondaryMenu("");
+                    }}
                     handleAddConnection={() => {
                         setSecondaryMenu("");
                         setSecondaryMenu("add-connection");

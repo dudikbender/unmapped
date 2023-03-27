@@ -11,7 +11,6 @@ import { Note } from "@/services/types/note";
 import { useMap } from "react-map-gl";
 import { useConnectionStore } from "@/services/stores/connectionStore";
 import { NotesFromConnection } from "./notesFromConnection";
-import { NoteList } from "../notes/notesList";
 
 type Props = {
     show: boolean;
@@ -129,11 +128,6 @@ export function ConnectionProfileModal({
                                     </div>
                                     <div className="mt-6">
                                         {handleNoteList()}
-                                        {/* <NotesFromConnection
-                                            notes={notesFromConnection}
-                                            mapObject={baseMap}
-                                            handleClose={handleClose}
-                                        /> */}
                                     </div>
                                 </div>
                             </Dialog.Panel>
